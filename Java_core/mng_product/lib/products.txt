@@ -1,0 +1,7 @@
+1,PR001,Apple iPhone 14,Smartphone,50,999
+2,PR002,Samsung Galaxy S23,Smartphone,30,899
+3,PR003,Dell XPS 13,Laptop,20,1200
+4,PR004,Apple MacBook Pro,Laptop,15,2500
+5,PR005,Sony WH-1000XM5,Headphones,40,350
+6,PR006,Logitech MX Master 3,Mouse,60,99
+7,PR007,Asus ROG Strix,Desktop,10,1500

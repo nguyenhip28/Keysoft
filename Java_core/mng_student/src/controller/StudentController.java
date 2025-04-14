@@ -13,7 +13,7 @@ public class StudentController {
     public void showMenu() {
         int choice;
         do {
-            System.out.println("\n=== Manage All Student ===");
+            System.out.println("\n=== Manage Student ===");
             System.out.println("1. All Students");
             System.out.println("2. Add New Student");
             System.out.println("3. Find Student by ID");
@@ -74,6 +74,10 @@ public class StudentController {
     }
 
     private void updateStudent() {
+        List<Student> list = studentService.getAll();
+        for (Student s : list) {
+            System.out.println(s);
+        }
         System.out.print("Enter ID to update: ");
         String id = scanner.nextLine();
         Student s = studentService.findById(id);
@@ -102,6 +106,10 @@ public class StudentController {
     }
 
     private void deleteStudent() {
+        List<Student> list = studentService.getAll();
+        for (Student s : list) {
+            System.out.println(s);
+        }
         System.out.print("Enter ID to delete: ");
         String id = scanner.nextLine();
         studentService.deleteById(id);

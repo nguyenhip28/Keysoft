@@ -1,11 +1,11 @@
 package util;
 
-public class ValidateUtil {
+public class Validate {
     public static boolean isValidAge(int age) {
-        return age >= 18 && age <= 100;
+        return age >= 5 && age <= 50;
     }
 
     public static boolean isValidScore(int score) {
-        return score >= 0 && score <= 10;
-    } 
+        return score >= 0 && score <= 100;
+    }
 }

@@ -70,8 +70,8 @@ public class Student {
 
     @Override
     public String toString() {
-        return "Student [id=" + id + ", studentID=" + studentID + ", studentName=" + studentName + ", age=" + age
-                + ", address=" + address + ", avgScore=" + avgScore + "]";
+        return "| ID: " + id + " | StudentID: " + studentID + " | StudentName: " + studentName + " | Age: " + age
+                + " | Address: " + address + " | AvgScore: " + avgScore + " |";
     }
 
     public String toFileString() {

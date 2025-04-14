@@ -2,15 +2,16 @@ package service;
 
 import model.Student;
 import util.FileUtil;
-import util.ValidateUtil;
+import util.Validate;
 
 import java.io.File;
 import java.util.*;
 
 public class StudentService {
-    private static final String FILE_PATH = "D://Keysoft Java/Java_core/mng_student/src/data/students.txt";
+    private static final String FILE_PATH = "D:/Keysoft Java/Java_core/mng_student/lib/students.txt";
     private List<Student> students;
     private int nextId = 1;
+    private static final Scanner scanner = new Scanner(System.in);
 
     public StudentService() {
         loadFromFile();
@@ -22,13 +23,13 @@ public class StudentService {
 
         File file = new File(FILE_PATH);
         if (!file.exists()) {
-            System.out.println(" File does not exist at: " + file.getAbsolutePath());
+            System.out.println("File does not exist at: " + file.getAbsolutePath());
             return;
         }
 
         List<String> lines = FileUtil.readFile(FILE_PATH);
         System.out.println("Reading data from file: " + file.getAbsolutePath());
-        System.out.println("Number of lines read: " + lines.size());
+        System.out.println("Number of lines: " + lines.size());
 
         for (String line : lines) {
             try {
@@ -63,16 +64,17 @@ public class StudentService {
     }
 
     public void addStudent(Student student) {
-        if (!ValidateUtil.isValidAge(student.getAge())) {
+        if (!Validate.isValidAge(student.getAge())) {
             throw new IllegalArgumentException("Invalid age!");
         }
-        if (!ValidateUtil.isValidScore(student.getAvgScore())) {
+        if (!Validate.isValidScore(student.getAvgScore())) {
             throw new IllegalArgumentException("Average score must be between 0 and 10!");
         }
 
-        student.setId(nextId++); // Auto-increment ID
+        student.setId(nextId++);
         students.add(student);
         saveToFile();
+        
     }
 
     public Student findById(String idStr) {
@@ -91,17 +93,40 @@ public class StudentService {
     public void deleteById(String idStr) {
         try {
             int id = Integer.parseInt(idStr);
-            boolean removed = students.removeIf(s -> s.getId() == id);
-            if (removed) {
-                System.out.println("Deleted student with ID: " + id);
+    
+            // Find the student by ID
+            Student studentToDelete = null;
+            for (Student s : students) {
+                if (s.getId() == id) {
+                    studentToDelete = s;
+                    break;
+                }
+            }
+    
+            if (studentToDelete == null) {
+                System.out.println("No student found with ID: " + id);
+                return;
+            }
+    
+            System.out.println("Are you sure you want to delete the following student?");
+            System.out.println(studentToDelete);
+            System.out.print("Enter 'y' to confirm deletion, or any other key to cancel: ");
+    
+            String confirm = scanner.nextLine();
+    
+            if (confirm.equalsIgnoreCase("y")) {
+                students.remove(studentToDelete);
+                System.out.println("Student with ID " + id + " has been deleted.");
                 saveToFile();
             } else {
-                System.out.println("Student not found.");
+                System.out.println("Deletion cancelled.");
             }
+    
         } catch (NumberFormatException e) {
-            System.out.println("Invalid ID format for deletion: " + idStr);
+            System.out.println("Invalid ID format: " + idStr);
         }
     }
+    
 
     public void updateStudent(String idStr, Student newStudent) {
         Student existing = findById(idStr);
