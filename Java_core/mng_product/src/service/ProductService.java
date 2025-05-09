@@ -74,6 +74,7 @@ public class ProductService {
             for (Product p : products) {
                 if (p.getId() == id) {
                     return p;
+                }
             }
         } catch (NumberFormatException e) {
             System.out.println("Invalid ID format: " + idStr);
