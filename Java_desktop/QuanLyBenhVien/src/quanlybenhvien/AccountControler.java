@@ -22,6 +22,27 @@ public class AccountControler {
         return null;
     }
 
+    public static boolean checkLogin(String username, String password, String role) {
+        Connection conn = getJDBCConnection();
+        if (conn == null)
+            return false;
+        String sql = "SELECT * FROM accounts WHERE email = ? AND password = ? AND role = ?";
+        try (java.sql.PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            stmt.setString(2, password);
+            stmt.setString(3, role);
+            java.sql.ResultSet rs = stmt.executeQuery();
+            boolean exists = rs.next();
+            rs.close();
+            stmt.close();
+            conn.close();
+            return exists;
+        } catch (SQLException ex) {
+            Logger.getLogger(AccountControler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
+    }
+
     public static void main(String[] args) {
         Connection conn = getJDBCConnection();
 
