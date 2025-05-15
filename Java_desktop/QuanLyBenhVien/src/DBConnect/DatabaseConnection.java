@@ -1,8 +1,5 @@
 package DBConnect;
 
-
-
-
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -17,7 +14,7 @@ public class DatabaseConnection {
 
     public static Connection getJDBConnection() {
 
-        String url = "jdbc:mysql://localhost:3306";
+        String url = "jdbc:mysql://localhost:3306/hospital_management?useSSL=false&serverTimezone=UTC";
         String user = "root";
         String password = "123456";
 

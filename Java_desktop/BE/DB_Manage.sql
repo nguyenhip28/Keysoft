@@ -42,12 +42,12 @@ CREATE TABLE patients (
 -- Appointments
 CREATE TABLE appointments (
     appointment_id INT PRIMARY KEY AUTO_INCREMENT,
-    patient_id INT,
+    patient_code VARCHAR(10) UNIQUE NOT NULL,
     appointment_date DATE NOT NULL,
     appointment_time TIME NOT NULL,
     symptoms TEXT,
     status ENUM('Scheduled', 'Completed', 'Cancelled'),
-    FOREIGN KEY (patient_id) REFERENCES patients(patient_id)
+    FOREIGN KEY (patient_code) REFERENCES patients(patient_code)
 );
 
 -- Medicines
