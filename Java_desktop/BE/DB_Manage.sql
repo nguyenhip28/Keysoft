@@ -33,7 +33,7 @@ CREATE TABLE patients (
     patient_code VARCHAR(10) UNIQUE NOT NULL, 
     full_name VARCHAR(100),
     date_of_birth DATE,
-    gender ENUM('Male', 'Female', 'Other'),
+    gender ENUM('Nam','Nữ'),
     address VARCHAR(200),
     phone_number VARCHAR(20),
     email VARCHAR(100)
@@ -42,11 +42,10 @@ CREATE TABLE patients (
 -- Appointments
 CREATE TABLE appointments (
     appointment_id INT PRIMARY KEY AUTO_INCREMENT,
-    patient_code VARCHAR(10) UNIQUE NOT NULL,
+    patient_code VARCHAR(10) NOT NULL,
     appointment_date DATE NOT NULL,
     appointment_time TIME NOT NULL,
     symptoms TEXT,
-    status ENUM('Scheduled', 'Completed', 'Cancelled'),
     FOREIGN KEY (patient_code) REFERENCES patients(patient_code)
 );
 
