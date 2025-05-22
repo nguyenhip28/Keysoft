@@ -208,7 +208,6 @@ public class add_benhnhan extends javax.swing.JFrame {
             int rows = pstmt.executeUpdate();
             if (rows > 0) {
                 JOptionPane.showMessageDialog(this, "Thêm bệnh nhân thành công!");
-                dispose(); // đóng form sau khi thêm
             } else {
                 JOptionPane.showMessageDialog(this, "Không thể thêm bệnh nhân.");
             }
