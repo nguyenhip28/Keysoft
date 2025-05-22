@@ -10,12 +10,19 @@ import javax.swing.JOptionPane;
 import java.sql.SQLException;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import site.role.admin;
+import site.role.doctor;
+import site.role.letan;
 
 /**
  *
  * @author Vu Nguyen
  */
 public class add_benhnhan extends javax.swing.JFrame {
+
+    private javax.swing.JFrame parent;
+    private String userCode;
+    private String userRole;
 
     private String generateNewPatientCode() {
         String newCode = "BN-001";
@@ -34,6 +41,13 @@ public class add_benhnhan extends javax.swing.JFrame {
         initComponents();
         lb_benhnhan_code.setText(generateNewPatientCode());
         lb_benhnhan_code.setEditable(false); // không cho sửa
+    }
+
+    public add_benhnhan(javax.swing.JFrame parent, String userCode, String userRole) {
+        this.parent = parent;
+        this.userCode = userCode;
+        this.userRole = userRole;
+        initComponents();
     }
 
     /**
@@ -95,6 +109,11 @@ public class add_benhnhan extends javax.swing.JFrame {
         });
 
         btn_back.setText("Back");
+        btn_back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_backActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -215,6 +234,16 @@ public class add_benhnhan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Lỗi: " + e.getMessage());
         }
     }//GEN-LAST:event_btn_addActionPerformed
+
+    private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
+        this.dispose(); // Close the current add_benhnhan window
+        if (parent != null) {
+            parent.setVisible(true); // Show the parent window (benhnhan_manage)
+        } else {
+            // Fallback: Open a new benhnhan_manage window with userCode and userRole
+            new benhnhan_manage(null, userCode, userRole).setVisible(true);
+        }
+    }//GEN-LAST:event_btn_backActionPerformed
 
     /**
      * @param args the command line arguments

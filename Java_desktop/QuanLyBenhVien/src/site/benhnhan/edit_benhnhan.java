@@ -12,8 +12,34 @@ import com.toedter.calendar.JDateChooser;
  */
 public class edit_benhnhan extends javax.swing.JFrame {
 
+    private javax.swing.JFrame parent;
+    private String userCode;
+    private String userRole;
+
     public edit_benhnhan() {
         initComponents();
+    }
+
+    public edit_benhnhan(javax.swing.JFrame parent, String userCode, String userRole, String code, String name, String dob, String gender, String address, String phone, String email) {
+        this.parent = parent;
+        this.userCode = userCode;
+        this.userRole = userRole;
+        initComponents();
+        // Populate fields
+        lb_benhnhan_code.setText(code);
+        lb_fullname.setText(name);
+        lb_address.setText(address);
+        lb_email.setText(email);
+        lb_phonenumber.setText(phone);
+        try {
+            java.util.Date date = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(dob);
+            jDateChooser1.setDate(date);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        cb_gender.setSelectedItem(gender); // "Nam" hoặc "Nữ"
+
+        lb_benhnhan_code.setEditable(false); // Prevent editing patient code
     }
 
     public edit_benhnhan(String code, String name, String dob, String gender, String address, String phone, String email) {
@@ -68,6 +94,11 @@ public class edit_benhnhan extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         btn_back.setText("Back");
+        btn_back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_backActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("Ngày/ Tháng/ Năm sinh ");
 
@@ -216,7 +247,6 @@ public class edit_benhnhan extends javax.swing.JFrame {
 
             if (affectedRows > 0) {
                 JOptionPane.showMessageDialog(this, "Cập nhật thông tin bệnh nhân thành công!");
-                this.dispose(); // Đóng form sửa
                 // Bạn có thể thêm code để refresh danh sách bệnh nhân trên form chính nếu cần
             } else {
                 JOptionPane.showMessageDialog(this, "Cập nhật thất bại. Vui lòng thử lại.");
@@ -226,6 +256,16 @@ public class edit_benhnhan extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật dữ liệu: " + e.getMessage());
         }
     }//GEN-LAST:event_btn_editActionPerformed
+
+    private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
+        this.dispose(); // Close the current add_benhnhan window
+        if (parent != null) {
+            parent.setVisible(true); // Show the parent window (benhnhan_manage)
+        } else {
+            // Fallback: Open a new benhnhan_manage window with userCode and userRole
+            new benhnhan_manage(null, userCode, userRole).setVisible(true);
+        }
+    }//GEN-LAST:event_btn_backActionPerformed
 
     /**
      * @param args the command line arguments

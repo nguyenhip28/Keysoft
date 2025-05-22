@@ -220,9 +220,9 @@ public class benhnhan_manage extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
-        add_benhnhan addForm = new add_benhnhan();
+        add_benhnhan addForm = new add_benhnhan(this, userCode, userRole); // Pass parent, userCode, userRole
         addForm.setVisible(true);
-        this.dispose(); // Đóng form hiện tại (nếu muốn)
+        this.setVisible(false); // Hide benhnhan_manage instead of closing it
     }//GEN-LAST:event_btn_addActionPerformed
 
     private void btn_add1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_add1ActionPerformed
@@ -296,7 +296,7 @@ public class benhnhan_manage extends javax.swing.JFrame {
                 String email = rs.getString("email");
 
                 // Mở form edit với dữ liệu đã có
-                edit_benhnhan editForm = new edit_benhnhan(code, name, dob, gender, address, phone, email);
+                edit_benhnhan editForm = new edit_benhnhan(this, userCode, userRole, code, name, dob, gender, address, phone, email);
                 editForm.setVisible(true);
                 this.dispose(); // đóng form hiện tại
 
@@ -355,40 +355,20 @@ public class benhnhan_manage extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_deleteActionPerformed
 
     private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
-        this.dispose(); // đóng cửa sổ hiện tại
+        this.dispose(); // Đóng form hiện tại
         if (parent != null) {
-            parent.setVisible(true); // mở lại form letan
-        }
-
-        switch (userRole.toLowerCase()) {
-            case "admin" -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                } else {
+            parent.setVisible(true); // Quay lại form cha đã truyền
+        } else if (userRole != null) {
+            switch (userRole.toLowerCase()) {
+                case "admin" ->
                     new admin(userCode).setVisible(true);
-                }
-            }
-
-            case "doctor" -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                } else {
-                    new doctor(userCode).setVisible(true);
-                }
-            }
-
-            case "letan" -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                } else {
+                case "letan" ->
                     new letan(userCode).setVisible(true);
-                }
+                default ->
+                    JOptionPane.showMessageDialog(null, "Vai trò không xác định: " + userRole);
             }
-            default -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                }
-            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Lỗi: Không xác định được vai trò người dùng.");
         }
     }//GEN-LAST:event_btn_backActionPerformed
 
