@@ -105,6 +105,11 @@ public class EditPatient extends javax.swing.JFrame {
         jLabel5.setText("Giới tính");
 
         cb_gender.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Nam", "Nữ" }));
+        cb_gender.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cb_genderActionPerformed(evt);
+            }
+        });
 
         jLabel6.setText("Địa chỉ");
 
@@ -266,6 +271,10 @@ public class EditPatient extends javax.swing.JFrame {
             new ManagePatient(null, userCode, userRole).setVisible(true);
         }
     }//GEN-LAST:event_btn_backActionPerformed
+
+    private void cb_genderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cb_genderActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cb_genderActionPerformed
 
     /**
      * @param args the command line arguments
