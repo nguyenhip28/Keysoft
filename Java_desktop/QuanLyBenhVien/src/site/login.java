@@ -1,8 +1,8 @@
 package site;
 
-import site.role.letan;
-import site.role.doctor;
-import site.role.admin;
+import site.role.LeTan;
+import site.role.Doctor;
+import site.role.Admin;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,12 +15,12 @@ import java.sql.SQLException;
  *
  * @author Vu Nguyen
  */
-public class login extends javax.swing.JFrame {
+public class Login extends javax.swing.JFrame {
 
     /**
      * Creates new form login
      */
-    public login() {
+    public Login() {
         initComponents();
     }
 
@@ -152,11 +152,11 @@ public class login extends javax.swing.JFrame {
                             // Mở form tương ứng, truyền userCode
                             switch (role) {
                                 case "Admin" ->
-                                    new admin(userCode).setVisible(true);
+                                    new Admin(userCode).setVisible(true);
                                 case "Bác Sĩ" ->
-                                    new doctor(userCode).setVisible(true);
+                                    new Doctor(userCode).setVisible(true);
                                 case "Lễ tân", "Le tan" ->
-                                    new letan(userCode).setVisible(true);
+                                    new LeTan(userCode).setVisible(true);
                                 default -> {
                                     JOptionPane.showMessageDialog(this, "Vai trò chưa được hỗ trợ.");
                                     this.setVisible(true); // Hiển thị lại login nếu không xác định
@@ -196,19 +196,20 @@ public class login extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new login().setVisible(true);
+            new Login().setVisible(true);
         });
     }
 

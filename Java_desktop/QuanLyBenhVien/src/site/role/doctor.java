@@ -9,17 +9,17 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
-import site.benhnhan.benhnhan_manage;
-import site.lichhen.lichhen_manage;
-import site.login;
-import site.thuoc.don_thuoc;
-import site.thuoc.thuoc_manage;
+import site.benhnhan.ManagePatient;
+import site.lichhen.ManageAppointment;
+import site.Login;
+import site.thuoc.CreateMedicines;
+import site.thuoc.ManageMedicines;
 
 /**
  *
  * @author Vu Nguyen
  */
-public class doctor extends javax.swing.JFrame {
+public class Doctor extends javax.swing.JFrame {
 
     private String userCode;
 
@@ -29,11 +29,11 @@ public class doctor extends javax.swing.JFrame {
     );
     private List<String> currentPermissions;
 
-    public doctor() {
+    public Doctor() {
         initComponents();
     }
 
-    public doctor(String userCode) {
+    public Doctor(String userCode) {
         this.userCode = userCode;
         initComponents();
         loadPermissions();
@@ -216,7 +216,7 @@ public class doctor extends javax.swing.JFrame {
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             this.setVisible(false); // Ẩn form hiện tại
-            new login().setVisible(true); // Mở lại trang login
+            new Login().setVisible(true); // Mở lại trang login
         }
     }//GEN-LAST:event_btn_logoutActionPerformed
 
@@ -238,11 +238,11 @@ public class doctor extends javax.swing.JFrame {
         switch (selectedPermission) {
             case "Quản lý lịch hẹn" -> {
                 this.setVisible(false);
-                new lichhen_manage(this, userCode, "admin").setVisible(true);
+                new ManageAppointment(this, userCode, "admin").setVisible(true);
             }
             case "Quản lý đơn thuốc" -> {
                 this.setVisible(false);
-                new don_thuoc(this, userCode, "admin").setVisible(true);
+                new CreateMedicines(this, userCode, "admin").setVisible(true);
             }
             default ->
                 JOptionPane.showMessageDialog(this, "Quyền chưa được hỗ trợ.");
@@ -266,19 +266,20 @@ public class doctor extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new doctor().setVisible(true);
+            new Doctor().setVisible(true);
         });
     }
 

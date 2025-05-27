@@ -1,14 +1,14 @@
 package site.role;
 
-import site.lichhen.lichhen_manage;
-import site.benhnhan.benhnhan_manage;
+import site.lichhen.ManageAppointment;
+import site.benhnhan.ManagePatient;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import javax.swing.JOptionPane;
-import site.login;
+import site.Login;
 import DBConnect.PermissionService;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * @author Vu Nguyen
  */
-public class letan extends javax.swing.JFrame {
+public class LeTan extends javax.swing.JFrame {
 
     private String userCode;
 
@@ -30,11 +30,11 @@ public class letan extends javax.swing.JFrame {
     /**
      * Creates new form letan
      */
-    public letan() {
+    public LeTan() {
         initComponents();
     }
 
-    public letan(String userCode) {
+    public LeTan(String userCode) {
         this.userCode = userCode;
         initComponents();
         loadPermissions();
@@ -77,8 +77,8 @@ public class letan extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel2.setText("LỊCH HẸN");
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setText("LỊCH HẸN");
 
         btn_refresh.setText("Refresh");
         btn_refresh.addActionListener(new java.awt.event.ActionListener() {
@@ -89,8 +89,8 @@ public class letan extends javax.swing.JFrame {
 
         cb_choose.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 
-        jLabel1.setText("LE TAN SITE");
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel1.setText("LE TAN SITE");
 
         btn_choose.setText("Tiếp tục");
         btn_choose.addActionListener(new java.awt.event.ActionListener() {
@@ -99,10 +99,10 @@ public class letan extends javax.swing.JFrame {
             }
         });
 
-        btn_logout.setText("Logout");
         btn_logout.setBackground(new java.awt.Color(204, 0, 0));
         btn_logout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btn_logout.setForeground(new java.awt.Color(255, 255, 255));
+        btn_logout.setText("Logout");
         btn_logout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_logoutActionPerformed(evt);
@@ -214,7 +214,7 @@ public class letan extends javax.swing.JFrame {
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             this.setVisible(false); // Ẩn form hiện tại
-            new login().setVisible(true); // Mở lại trang login
+            new Login().setVisible(true); // Mở lại trang login
         }
     }//GEN-LAST:event_btn_logoutActionPerformed
 
@@ -236,11 +236,11 @@ public class letan extends javax.swing.JFrame {
         switch (selectedPermission) {
             case "Quản lý lịch hẹn" -> {
                 this.setVisible(false);
-                new lichhen_manage(this, userCode, "letan").setVisible(true);
+                new ManageAppointment(this, userCode, "letan").setVisible(true);
             }
             case "Quản lý bệnh nhân" -> {
                 this.setVisible(false);
-                new benhnhan_manage(this, userCode, "letan").setVisible(true);
+                new ManagePatient(this, userCode, "letan").setVisible(true);
             }
             default ->
                 JOptionPane.showMessageDialog(this, "Quyền chưa được hỗ trợ.");
@@ -264,14 +264,15 @@ public class letan extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(letan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LeTan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(letan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LeTan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(letan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LeTan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(letan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LeTan.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
