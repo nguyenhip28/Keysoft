@@ -19,6 +19,8 @@ public class ManagePatient extends javax.swing.JFrame {
     private javax.swing.JFrame parent;
     private String userCode;
     private String userRole;
+    private int currentPage = 1;
+    private final int pageSize = 5;
 
     /**
      * Creates new form benhnhan_manage
@@ -34,6 +36,45 @@ public class ManagePatient extends javax.swing.JFrame {
         initComponents();
     }
 
+    private void loadPatients(int page) {
+        display_benhnhan.setText(""); // Xóa nội dung cũ
+
+        int offset = (page - 1) * pageSize;
+        String query = "SELECT * FROM patients LIMIT " + pageSize + " OFFSET " + offset;
+
+        try (Connection conn = DBConnect.DatabaseConnection.getJDBConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+
+            boolean hasData = false;
+
+            while (rs.next()) {
+                hasData = true;
+                String code = rs.getString("patient_code");
+                String name = rs.getString("full_name");
+                String dob = rs.getString("date_of_birth");
+                String gender = rs.getString("gender");
+                String address = rs.getString("address");
+                String phone = rs.getString("phone_number");
+                String email = rs.getString("email");
+
+                String info = String.format(
+                        "Mã: %s\nTên: %s\nNgày sinh: %s\nGiới tính: %s\nĐịa chỉ: %s\nSĐT: %s\nEmail: %s\n------------------------------\n",
+                        code, name, dob, gender, address, phone, email
+                );
+
+                display_benhnhan.append(info);
+            }
+
+            if (!hasData && currentPage > 1) {
+                currentPage--; // Trở lại trang trước nếu không có dữ liệu
+                JOptionPane.showMessageDialog(this, "Không còn dữ liệu để hiển thị.");
+                loadPatients(currentPage); // Tải lại trang hợp lệ
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi lấy danh sách bệnh nhân: " + e.getMessage());
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -44,6 +85,7 @@ public class ManagePatient extends javax.swing.JFrame {
     private void initComponents() {
 
         btn_add1 = new javax.swing.JButton();
+        btn_previous1 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         display_benhnhan = new javax.swing.JTextArea();
@@ -56,6 +98,8 @@ public class ManagePatient extends javax.swing.JFrame {
         btn_edit = new javax.swing.JButton();
         btn_delete = new javax.swing.JButton();
         btn_back = new javax.swing.JButton();
+        btn_previous = new javax.swing.JButton();
+        btn_next = new javax.swing.JButton();
 
         btn_add1.setText("Thêm bệnh nhân");
         btn_add1.addActionListener(new java.awt.event.ActionListener() {
@@ -64,72 +108,91 @@ public class ManagePatient extends javax.swing.JFrame {
             }
         });
 
+        btn_previous1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_previous1.setText("<");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel1.setText("Quản lý bệnh nhân");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
 
         display_benhnhan.setColumns(20);
         display_benhnhan.setRows(5);
         jScrollPane1.setViewportView(display_benhnhan);
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel2.setText("Danh sách bệnh nhân");
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
+        btn_refresh.setText("Refresh");
         btn_refresh.setBackground(new java.awt.Color(0, 153, 255));
         btn_refresh.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_refresh.setText("Refresh");
         btn_refresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_refreshActionPerformed(evt);
             }
         });
 
+        btn_add.setText("Thêm bệnh nhân");
         btn_add.setBackground(new java.awt.Color(0, 153, 255));
         btn_add.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_add.setText("Thêm bệnh nhân");
         btn_add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_addActionPerformed(evt);
             }
         });
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("Nhập thông tin bệnh nhân");
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
 
+        btn_search.setText("Tìm kiếm");
         btn_search.setBackground(new java.awt.Color(0, 153, 255));
         btn_search.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_search.setText("Tìm kiếm");
         btn_search.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_searchActionPerformed(evt);
             }
         });
 
+        btn_edit.setText("Sửa bệnh nhân");
         btn_edit.setBackground(new java.awt.Color(0, 153, 255));
         btn_edit.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_edit.setText("Sửa bệnh nhân");
         btn_edit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_editActionPerformed(evt);
             }
         });
 
+        btn_delete.setText("Xóa bệnh nhân");
         btn_delete.setBackground(new java.awt.Color(0, 153, 255));
         btn_delete.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_delete.setText("Xóa bệnh nhân");
         btn_delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_deleteActionPerformed(evt);
             }
         });
 
+        btn_back.setText("Back");
         btn_back.setBackground(new java.awt.Color(0, 153, 255));
         btn_back.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_back.setText("Back");
         btn_back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_backActionPerformed(evt);
+            }
+        });
+
+        btn_previous.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_previous.setText("<");
+        btn_previous.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_previousActionPerformed(evt);
+            }
+        });
+
+        btn_next.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_next.setText(">");
+        btn_next.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_nextActionPerformed(evt);
             }
         });
 
@@ -159,12 +222,16 @@ public class ManagePatient extends javax.swing.JFrame {
                         .addComponent(jLabel3)
                         .addGap(18, 18, 18)))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_refresh))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 291, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(31, 31, 31))
+                        .addComponent(btn_refresh)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btn_previous, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(30, 30, 30))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -178,7 +245,9 @@ public class ManagePatient extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(btn_refresh))
+                            .addComponent(btn_refresh)
+                            .addComponent(btn_previous)
+                            .addComponent(btn_next))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(33, 33, 33))
@@ -202,35 +271,8 @@ public class ManagePatient extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
-        display_benhnhan.setText(""); // Xóa nội dung cũ
-
-        String query = "SELECT * FROM patients";
-
-        try {
-            try (Connection conn = DBConnect.DatabaseConnection.getJDBConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
-
-                while (rs.next()) {
-                    String code = rs.getString("patient_code");
-                    String name = rs.getString("full_name");
-                    String dob = rs.getString("date_of_birth");
-                    String gender = rs.getString("gender");
-                    String address = rs.getString("address");
-                    String phone = rs.getString("phone_number");
-                    String email = rs.getString("email");
-
-                    String info = String.format(
-                            "Mã: %s\nTên: %s\nNgày sinh: %s\nGiới tính: %s\nĐịa chỉ: %s\nSĐT: %s\nEmail: %s\n------------------------------\n",
-                            code, name, dob, gender, address, phone, email
-                    );
-
-                    display_benhnhan.append(info);
-                }
-
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi lấy danh sách bệnh nhân: " + e.getMessage());
-        }
+        currentPage = 1;
+        loadPatients(currentPage);
     }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
@@ -386,6 +428,20 @@ public class ManagePatient extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_backActionPerformed
 
+    private void btn_previousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_previousActionPerformed
+        if (currentPage > 1) {
+            currentPage--;
+            loadPatients(currentPage);
+        } else {
+            JOptionPane.showMessageDialog(this, "Đang ở trang đầu tiên.");
+        }
+    }//GEN-LAST:event_btn_previousActionPerformed
+
+    private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
+        currentPage++;
+        loadPatients(currentPage);
+    }//GEN-LAST:event_btn_nextActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -426,6 +482,9 @@ public class ManagePatient extends javax.swing.JFrame {
     private javax.swing.JButton btn_back;
     private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_edit;
+    private javax.swing.JButton btn_next;
+    private javax.swing.JButton btn_previous;
+    private javax.swing.JButton btn_previous1;
     private javax.swing.JButton btn_refresh;
     private javax.swing.JButton btn_search;
     private javax.swing.JTextArea display_benhnhan;

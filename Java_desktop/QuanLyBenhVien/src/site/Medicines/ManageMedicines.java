@@ -7,6 +7,9 @@ import javax.swing.table.DefaultTableModel;
 import site.UserRole.admin;
 import site.UserRole.doctor;
 import site.UserRole.letan;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  *
@@ -17,9 +20,14 @@ public class ManageMedicines extends javax.swing.JFrame {
     private javax.swing.JFrame parent;
     private String userCode;
     private String userRole;
+    private int currentPage = 1;
+    private final int rowsPerPage = 5;
+    private int totalRecords = 0;
 
     public ManageMedicines() {
         initComponents();
+        loadTotalRecords();
+        loadThuocData(currentPage);
     }
 
     public ManageMedicines(javax.swing.JFrame parent, String userCode, String userRole) {
@@ -28,7 +36,54 @@ public class ManageMedicines extends javax.swing.JFrame {
         this.userRole = userRole;
         initComponents();
     }
-    
+
+    private void loadTotalRecords() {
+        try (Connection conn = DBConnect.DatabaseConnection.getJDBConnection()) {
+            String sql = "SELECT COUNT(*) FROM medicines";
+            try (PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    totalRecords = rs.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Lỗi khi đếm số thuốc!");
+        }
+    }
+
+    private void loadThuocData(int page) {
+        display_thuoc.setText(""); // Clear previous content
+        int offset = (page - 1) * rowsPerPage;
+
+        try (Connection conn = DBConnect.DatabaseConnection.getJDBConnection()) {
+            String sql = "SELECT * FROM medicines LIMIT ? OFFSET ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, rowsPerPage);
+                stmt.setInt(2, offset);
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    boolean hasData = false;
+                    while (rs.next()) {
+                        hasData = true;
+                        int id = rs.getInt("medicine_id");
+                        String name = rs.getString("medicine_name");
+                        String unit = rs.getString("unit");
+                        int quantity = rs.getInt("quantity");
+                        double price = rs.getDouble("price");
+
+                        display_thuoc.append("ID: " + id + "\nTên thuốc: " + name + "\nĐơn vị: " + unit
+                                + "\nSố lượng: " + quantity + "\nGiá tiền: " + price + "\n-----------------------\n");
+                    }
+
+                    if (!hasData && page > 1) {
+                        currentPage--; // Không có dữ liệu, trở lại trang trước
+                        javax.swing.JOptionPane.showMessageDialog(this, "Không còn dữ liệu để hiển thị.");
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            javax.swing.JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách thuốc!");
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -58,6 +113,8 @@ public class ManageMedicines extends javax.swing.JFrame {
         btn_delete = new javax.swing.JButton();
         btn_check_sl = new javax.swing.JButton();
         btn_back = new javax.swing.JButton();
+        btn_previous = new javax.swing.JButton();
+        btn_next = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -131,77 +188,85 @@ public class ManageMedicines extends javax.swing.JFrame {
             }
         });
 
+        btn_previous.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_previous.setText("<");
+        btn_previous.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_previousActionPerformed(evt);
+            }
+        });
+
+        btn_next.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_next.setText(">");
+        btn_next.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_nextActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(20, 20, 20)
+                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(lb_thuoc_name, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel2)
                                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lb_gia_tien))
+                                    .addComponent(lb_gia_tien, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(lb_don_vi, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(lb_so_luong, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, Short.MAX_VALUE))
+                                    .addComponent(jLabel4)))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(lb_thuoc_input, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
                                         .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabel7))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                    .addComponent(jLabel7)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGap(94, 94, 94)
+                                        .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(114, 114, 114)
-                        .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(30, 30, 30)
+                        .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(53, 53, 53))
+                .addGap(30, 30, 30)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(btn_check_sl)
+                            .addGap(78, 78, 78))
+                        .addComponent(btn_back, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_refresh)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btn_back, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(22, 22, 22))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btn_check_sl)
-                .addGap(131, 131, 131))
+                        .addGap(32, 32, 32)
+                        .addComponent(btn_previous, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(36, 36, 36))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btn_back, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btn_refresh)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_check_sl, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addGap(29, 29, 29)
+                        .addGap(45, 45, 45)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel2)
@@ -229,7 +294,20 @@ public class ManageMedicines extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lb_thuoc_input, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                        .addGap(89, 89, 89))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btn_back, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_refresh)
+                            .addComponent(btn_previous)
+                            .addComponent(btn_next))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_check_sl, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(17, 17, 17))))
         );
 
         pack();
@@ -287,26 +365,9 @@ public class ManageMedicines extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_addActionPerformed
 
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
-        display_thuoc.setText(""); // Xóa nội dung cũ trước khi load mới
-
-        try (Connection conn = DBConnect.DatabaseConnection.getJDBConnection()) {
-            String sql = "SELECT * FROM medicines";
-            try (java.sql.PreparedStatement stmt = conn.prepareStatement(sql); java.sql.ResultSet rs = stmt.executeQuery()) {
-
-                while (rs.next()) {
-                    int id = rs.getInt("medicine_id");
-                    String name = rs.getString("medicine_name");
-                    String unit = rs.getString("unit");
-                    int quantity = rs.getInt("quantity");
-                    double price = rs.getDouble("price");
-
-                    display_thuoc.append("ID: " + id + "\nTên thuốc: " + name + "\nĐơn vị: " + unit
-                            + "\nSố lượng: " + quantity + "\nGiá tiền: " + price + "\n-----------------------\n");
-                }
-            }
-        } catch (SQLException e) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách thuốc!");
-        }
+        loadTotalRecords();
+        currentPage = 1;
+        loadThuocData(currentPage);
     }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
@@ -440,6 +501,25 @@ public class ManageMedicines extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_backActionPerformed
 
+    private void btn_previousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_previousActionPerformed
+        if (currentPage > 1) {
+            currentPage--;
+            loadThuocData(currentPage);
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Đã là trang đầu tiên.");
+        }
+    }//GEN-LAST:event_btn_previousActionPerformed
+
+    private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
+        int totalPages = (int) Math.ceil((double) totalRecords / rowsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadThuocData(currentPage);
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Đã là trang cuối cùng.");
+        }
+    }//GEN-LAST:event_btn_nextActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -479,6 +559,8 @@ public class ManageMedicines extends javax.swing.JFrame {
     private javax.swing.JButton btn_back;
     private javax.swing.JButton btn_check_sl;
     private javax.swing.JButton btn_delete;
+    private javax.swing.JButton btn_next;
+    private javax.swing.JButton btn_previous;
     private javax.swing.JButton btn_refresh;
     private javax.swing.JTextArea display_thuoc;
     private javax.swing.JLabel jLabel1;

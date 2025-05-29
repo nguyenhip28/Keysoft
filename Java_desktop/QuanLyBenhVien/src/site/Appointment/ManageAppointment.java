@@ -23,6 +23,10 @@ public class ManageAppointment extends javax.swing.JFrame {
     private String userCode;
     private String userRole;
 
+    private int currentPage = 1;
+    private int pageSize = 5;
+    private int totalRecords = 0;
+
     public ManageAppointment() {
         initComponents();
     }
@@ -32,6 +36,62 @@ public class ManageAppointment extends javax.swing.JFrame {
         this.userCode = userCode;
         this.userRole = userRole;
         initComponents();
+        loadAppointmentsByPage(currentPage);
+    }
+
+    private void loadAppointmentsByPage(int page) {
+        try (Connection conn = DBConnect.DatabaseConnection.getJDBConnection()) {
+            if (conn == null) {
+                JOptionPane.showMessageDialog(this, "Không thể kết nối tới CSDL!");
+                return;
+            }
+
+            int offset = (page - 1) * pageSize;
+
+            // Đếm tổng số bản ghi
+            String countQuery = "SELECT COUNT(*) FROM appointments";
+            try (PreparedStatement countStmt = conn.prepareStatement(countQuery); var rsCount = countStmt.executeQuery()) {
+                if (rsCount.next()) {
+                    totalRecords = rsCount.getInt(1);
+                }
+            }
+
+            String query = """
+            SELECT a.patient_code, p.full_name, a.appointment_date, a.appointment_time, a.symptoms
+            FROM appointments a
+            JOIN patients p ON a.patient_code = p.patient_code
+            ORDER BY a.appointment_date DESC, a.appointment_time DESC
+            LIMIT ? OFFSET ?
+        """;
+
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, pageSize);
+                stmt.setInt(2, offset);
+                try (var rs = stmt.executeQuery()) {
+                    display_lichhen.setText("");
+
+                    while (rs.next()) {
+                        String patientCode = rs.getString("patient_code");
+                        String fullName = rs.getString("full_name");
+                        LocalDate date = rs.getDate("appointment_date").toLocalDate();
+                        LocalTime time = rs.getTime("appointment_time").toLocalTime();
+                        String symptoms = rs.getString("symptoms");
+
+                        String appointmentInfo = "Mã BN: " + patientCode
+                                + "\nBệnh nhân: " + fullName
+                                + "\nNgày: " + date
+                                + "\nGiờ: " + time
+                                + "\nTriệu chứng: " + symptoms
+                                + "\n------------------------\n";
+
+                        display_lichhen.append(appointmentInfo);
+                    }
+                }
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn lịch hẹn: " + ex.getMessage());
+        }
     }
 
     /**
@@ -57,6 +117,9 @@ public class ManageAppointment extends javax.swing.JFrame {
         lb_patient_code = new javax.swing.JTextField();
         btn_refresh = new javax.swing.JButton();
         btn_back = new javax.swing.JButton();
+        btn_previous = new javax.swing.JButton();
+        btn_next = new javax.swing.JButton();
+        btn_delete = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -110,6 +173,31 @@ public class ManageAppointment extends javax.swing.JFrame {
             }
         });
 
+        btn_previous.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_previous.setText("<");
+        btn_previous.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_previousActionPerformed(evt);
+            }
+        });
+
+        btn_next.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_next.setText(">");
+        btn_next.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_nextActionPerformed(evt);
+            }
+        });
+
+        btn_delete.setBackground(new java.awt.Color(0, 153, 255));
+        btn_delete.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_delete.setText("Hủy lịch");
+        btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_deleteActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -121,25 +209,33 @@ public class ManageAppointment extends javax.swing.JFrame {
                 .addComponent(btn_back, javax.swing.GroupLayout.PREFERRED_SIZE, 95, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(33, 33, 33))
             .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(92, 92, 92)
-                        .addComponent(btn_datlich, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(cb_date_time, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lb_patient_code, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel5))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                        .addGap(24, 24, 24)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel2)
+                            .addComponent(cb_date_time, javax.swing.GroupLayout.PREFERRED_SIZE, 290, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 89, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lb_patient_code, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel5)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(53, 53, 53)
+                        .addComponent(btn_datlich, javax.swing.GroupLayout.PREFERRED_SIZE, 103, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(31, 31, 31)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_refresh))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(25, 25, 25))
+                        .addComponent(btn_refresh)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btn_previous, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(29, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -152,7 +248,7 @@ public class ManageAppointment extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(btn_back, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel5)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -165,15 +261,19 @@ public class ManageAppointment extends javax.swing.JFrame {
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btn_datlich, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btn_datlich, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
-                            .addComponent(btn_refresh))
+                            .addComponent(btn_refresh)
+                            .addComponent(btn_previous)
+                            .addComponent(btn_next))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane2)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(40, Short.MAX_VALUE))
         );
 
@@ -251,48 +351,7 @@ public class ManageAppointment extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_datlichActionPerformed
 
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
-        try (Connection conn = DBConnect.DatabaseConnection.getJDBConnection()) {
-            if (conn == null) {
-                JOptionPane.showMessageDialog(this, "Không thể kết nối tới CSDL!");
-                return;
-            }
-
-            String query = """
-            SELECT a.patient_code, p.full_name, a.appointment_date, a.appointment_time, a.symptoms
-            FROM appointments a
-            JOIN patients p ON a.patient_code = p.patient_code
-            ORDER BY a.appointment_date DESC, a.appointment_time DESC
-        """;
-
-            try (PreparedStatement stmt = conn.prepareStatement(query); var rs = stmt.executeQuery()) {
-
-                display_lichhen.setText(""); // Xóa nội dung cũ
-
-                while (rs.next()) {
-                    String patientCode = rs.getString("patient_code");
-                    String fullName = rs.getString("full_name");
-                    LocalDate date = rs.getDate("appointment_date").toLocalDate();
-                    LocalTime time = rs.getTime("appointment_time").toLocalTime();
-                    String symptoms = rs.getString("symptoms");
-
-                    String appointmentInfo = "Bệnh nhân: " + fullName
-                            + "\nMã BN: " + patientCode
-                            + "\nNgày: " + date
-                            + "\nGiờ: " + time
-                            + "\nTriệu chứng: " + symptoms
-                            + "\n------------------------\n";
-
-                    display_lichhen.append(appointmentInfo);
-                }
-
-                if (display_lichhen.getText().isEmpty()) {
-                    display_lichhen.setText("Không có lịch hẹn nào.");
-                }
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn lịch hẹn: " + e.getMessage());
-        }
+        loadAppointmentsByPage(currentPage);
     }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
@@ -333,6 +392,69 @@ public class ManageAppointment extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_backActionPerformed
 
+    private void btn_previousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_previousActionPerformed
+        if (currentPage > 1) {
+            currentPage--;
+            loadAppointmentsByPage(currentPage);
+        }
+    }//GEN-LAST:event_btn_previousActionPerformed
+
+    private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadAppointmentsByPage(currentPage);
+        }
+    }//GEN-LAST:event_btn_nextActionPerformed
+
+    private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
+        String patientCode = lb_patient_code.getText().trim();
+        LocalDate appointmentDate = cb_date_time.getDatePicker().getDate();
+        LocalTime appointmentTime = cb_date_time.getTimePicker().getTime();
+
+        if (patientCode.isEmpty() || appointmentDate == null || appointmentTime == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã bệnh nhân và chọn ngày giờ lịch hẹn cần hủy!");
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Bạn có chắc chắn muốn hủy lịch hẹn này?", "Xác nhận hủy lịch",
+                JOptionPane.YES_NO_OPTION);
+
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        try (Connection conn = DBConnect.DatabaseConnection.getJDBConnection()) {
+            if (conn == null) {
+                JOptionPane.showMessageDialog(this, "Không thể kết nối tới CSDL!");
+                return;
+            }
+
+            String sqlDelete = """
+            DELETE FROM appointments
+            WHERE patient_code = ? AND appointment_date = ? AND appointment_time = ?
+        """;
+
+            try (PreparedStatement stmt = conn.prepareStatement(sqlDelete)) {
+                stmt.setString(1, patientCode);
+                stmt.setDate(2, java.sql.Date.valueOf(appointmentDate));
+                stmt.setTime(3, java.sql.Time.valueOf(appointmentTime));
+
+                int affected = stmt.executeUpdate();
+
+                if (affected > 0) {
+                    JOptionPane.showMessageDialog(this, "Hủy lịch thành công!");
+                    loadAppointmentsByPage(currentPage); // cập nhật lại danh sách
+                } else {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy lịch hẹn để hủy!");
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi hủy lịch hẹn: " + e.getMessage());
+        }
+    }//GEN-LAST:event_btn_deleteActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -370,6 +492,9 @@ public class ManageAppointment extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_back;
     private javax.swing.JButton btn_datlich;
+    private javax.swing.JButton btn_delete;
+    private javax.swing.JButton btn_next;
+    private javax.swing.JButton btn_previous;
     private javax.swing.JButton btn_refresh;
     private com.github.lgooddatepicker.components.DateTimePicker cb_date_time;
     private javax.swing.JTextArea display_lichhen;

@@ -31,6 +31,10 @@ public class admin extends javax.swing.JFrame {
     );
     private List<String> currentPermissions;
 
+    private int currentPage = 1;
+    private int pageSize = 5;
+    private int totalRecords = 0;
+
     public admin() {
         initComponents();
     }
@@ -39,6 +43,8 @@ public class admin extends javax.swing.JFrame {
         this.userCode = userCode;
         initComponents();
         loadPermissions();
+        loadAppointmentsByPage(currentPage);
+
     }
 
     private void loadPermissions() {
@@ -55,6 +61,61 @@ public class admin extends javax.swing.JFrame {
                 String displayName = permissionMap.getOrDefault(perm, perm);
                 cb_choose.addItem(displayName);
             }
+        }
+    }
+
+    private void loadAppointmentsByPage(int page) {
+        try (Connection conn = DBConnect.DatabaseConnection.getJDBConnection()) {
+            if (conn == null) {
+                JOptionPane.showMessageDialog(this, "Không thể kết nối tới CSDL!");
+                return;
+            }
+
+            int offset = (page - 1) * pageSize;
+
+            // Đếm tổng số bản ghi
+            String countQuery = "SELECT COUNT(*) FROM appointments";
+            try (PreparedStatement countStmt = conn.prepareStatement(countQuery); var rsCount = countStmt.executeQuery()) {
+                if (rsCount.next()) {
+                    totalRecords = rsCount.getInt(1);
+                }
+            }
+
+            String query = """
+            SELECT a.patient_code, p.full_name, a.appointment_date, a.appointment_time, a.symptoms
+            FROM appointments a
+            JOIN patients p ON a.patient_code = p.patient_code
+            ORDER BY a.appointment_date DESC, a.appointment_time DESC
+            LIMIT ? OFFSET ?
+        """;
+
+            try (PreparedStatement stmt = conn.prepareStatement(query)) {
+                stmt.setInt(1, pageSize);
+                stmt.setInt(2, offset);
+                try (var rs = stmt.executeQuery()) {
+                    display_lichhen.setText("");
+
+                    while (rs.next()) {
+                        String patientCode = rs.getString("patient_code");
+                        String fullName = rs.getString("full_name");
+                        LocalDate date = rs.getDate("appointment_date").toLocalDate();
+                        LocalTime time = rs.getTime("appointment_time").toLocalTime();
+                        String symptoms = rs.getString("symptoms");
+
+                        String appointmentInfo = "Mã BN: " + patientCode
+                                + "\nBệnh nhân: " + fullName
+                                + "\nNgày: " + date
+                                + "\nGiờ: " + time
+                                + "\nTriệu chứng: " + symptoms
+                                + "\n------------------------\n";
+
+                        display_lichhen.append(appointmentInfo);
+                    }
+                }
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn lịch hẹn: " + ex.getMessage());
         }
     }
 
@@ -77,6 +138,8 @@ public class admin extends javax.swing.JFrame {
         btn_logout = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         display_lichhen = new javax.swing.JTextArea();
+        btn_previous = new javax.swing.JButton();
+        btn_next = new javax.swing.JButton();
 
         jCheckBoxMenuItem1.setSelected(true);
         jCheckBoxMenuItem1.setText("jCheckBoxMenuItem1");
@@ -126,6 +189,22 @@ public class admin extends javax.swing.JFrame {
         display_lichhen.setRows(5);
         jScrollPane1.setViewportView(display_lichhen);
 
+        btn_previous.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_previous.setText("<");
+        btn_previous.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_previousActionPerformed(evt);
+            }
+        });
+
+        btn_next.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_next.setText(">");
+        btn_next.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_nextActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -141,15 +220,21 @@ public class admin extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btn_logout, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(btn_logout, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE))
+                        .addGap(21, 21, 21))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(btn_refresh)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 333, Short.MAX_VALUE))
-                .addGap(21, 21, 21))
+                        .addGap(49, 49, 49)
+                        .addComponent(btn_previous, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -162,16 +247,20 @@ public class admin extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(btn_refresh))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel2)
+                                .addComponent(btn_refresh))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(btn_previous)
+                                .addComponent(btn_next)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 280, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(btn_choose, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cb_choose, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)))
+                        .addComponent(cb_choose, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 39, Short.MAX_VALUE)))
                 .addContainerGap(22, Short.MAX_VALUE))
         );
 
@@ -179,48 +268,7 @@ public class admin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
-        try (Connection conn = DBConnect.DatabaseConnection.getJDBConnection()) {
-            if (conn == null) {
-                JOptionPane.showMessageDialog(this, "Không thể kết nối tới CSDL!");
-                return;
-            }
-
-            String query = """
-            SELECT a.patient_code, p.full_name, a.appointment_date, a.appointment_time, a.symptoms
-            FROM appointments a
-            JOIN patients p ON a.patient_code = p.patient_code
-            ORDER BY a.appointment_date DESC, a.appointment_time DESC
-        """;
-
-            try (PreparedStatement stmt = conn.prepareStatement(query); var rs = stmt.executeQuery()) {
-
-                display_lichhen.setText(""); // Xóa nội dung cũ
-
-                while (rs.next()) {
-                    String patientCode = rs.getString("patient_code");
-                    String fullName = rs.getString("full_name");
-                    LocalDate date = rs.getDate("appointment_date").toLocalDate();
-                    LocalTime time = rs.getTime("appointment_time").toLocalTime();
-                    String symptoms = rs.getString("symptoms");
-
-                    String appointmentInfo = "Bệnh nhân: " + fullName
-                            + "\nMã BN: " + patientCode
-                            + "\nNgày: " + date
-                            + "\nGiờ: " + time
-                            + "\nTriệu chứng: " + symptoms
-                            + "\n------------------------\n";
-
-                    display_lichhen.append(appointmentInfo);
-                }
-
-                if (display_lichhen.getText().isEmpty()) {
-                    display_lichhen.setText("Không có lịch hẹn nào.");
-                }
-            }
-
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn lịch hẹn: " + e.getMessage());
-        }
+        loadAppointmentsByPage(currentPage);
     }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void btn_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logoutActionPerformed
@@ -267,6 +315,21 @@ public class admin extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Quyền chưa được hỗ trợ.");
         }
     }//GEN-LAST:event_btn_chooseActionPerformed
+
+    private void btn_previousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_previousActionPerformed
+        if (currentPage > 1) {
+            currentPage--;
+            loadAppointmentsByPage(currentPage);
+        }
+    }//GEN-LAST:event_btn_previousActionPerformed
+
+    private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
+        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadAppointmentsByPage(currentPage);
+        }
+    }//GEN-LAST:event_btn_nextActionPerformed
 
     /**
      * @param args the command line arguments
@@ -318,6 +381,8 @@ public class admin extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_choose;
     private javax.swing.JButton btn_logout;
+    private javax.swing.JButton btn_next;
+    private javax.swing.JButton btn_previous;
     private javax.swing.JButton btn_refresh;
     private javax.swing.JComboBox<String> cb_choose;
     private javax.swing.JTextArea display_lichhen;
