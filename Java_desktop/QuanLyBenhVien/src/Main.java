@@ -17,6 +17,6 @@ public class Main {
         }
 
         // Khởi chạy form đăng nhập đầu tiên
-        new site.Login().setVisible(true);
+        new View.login().setVisible(true);
     }
 }
