@@ -366,9 +366,9 @@ public class ManagePatientView extends javax.swing.JFrame {
         } else if (userRole != null) {
             switch (userRole.toLowerCase()) {
                 case "admin" ->
-                    new AdminView(userCode).setVisible(true);
+                    new admin(userCode).setVisible(true);
                 case "letan" ->
-                    new LetanView(userCode).setVisible(true);
+                    new letan(userCode).setVisible(true);
                 default ->
                     JOptionPane.showMessageDialog(null, "Vai trò không xác định: " + userRole);
             }

@@ -22,6 +22,7 @@ public class CreateMedicinesView extends javax.swing.JFrame {
     /**
      * Creates new form don_thuoc
      */
+    
     private final List<Map<String, String>> dsThuoc = new ArrayList<>();
     private String currentPatientCode = "";
     private double totalAmount = 0.0;
@@ -319,6 +320,7 @@ public class CreateMedicinesView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_addActionPerformed
 
+    @SuppressWarnings("unchecked")
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         String patientCodeInput = lb_benhnhan_code.getText().trim();
         if (patientCodeInput.isEmpty()) {
@@ -361,6 +363,7 @@ public class CreateMedicinesView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_searchActionPerformed
 
+    @SuppressWarnings("unchecked")
     private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
         try {
             PrescriptionController controller = new PrescriptionController();
@@ -409,7 +412,7 @@ public class CreateMedicinesView extends javax.swing.JFrame {
                 if (parent != null) {
                     parent.setVisible(true);
                 } else {
-                    new AdminView(userCode).setVisible(true);
+                    new admin(userCode).setVisible(true);
                 }
             }
 
@@ -417,7 +420,7 @@ public class CreateMedicinesView extends javax.swing.JFrame {
                 if (parent != null) {
                     parent.setVisible(true);
                 } else {
-                    new DoctorView(userCode).setVisible(true);
+                    new doctor(userCode).setVisible(true);
                 }
             }
 
@@ -425,7 +428,7 @@ public class CreateMedicinesView extends javax.swing.JFrame {
                 if (parent != null) {
                     parent.setVisible(true);
                 } else {
-                    new LetanView(userCode).setVisible(true);
+                    new letan(userCode).setVisible(true);
                 }
             }
             default -> {

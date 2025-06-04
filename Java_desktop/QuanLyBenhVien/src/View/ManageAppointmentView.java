@@ -299,11 +299,11 @@ public class ManageAppointmentView extends javax.swing.JFrame {
         } else {
             switch (userRole.toLowerCase()) {
                 case "admin" ->
-                    new AdminView(userCode).setVisible(true);
+                    new admin(userCode).setVisible(true);
                 case "doctor" ->
-                    new DoctorView(userCode).setVisible(true);
+                    new doctor(userCode).setVisible(true);
                 case "letan" ->
-                    new LetanView(userCode).setVisible(true);
+                    new letan(userCode).setVisible(true);
                 default -> {
                 }
             }

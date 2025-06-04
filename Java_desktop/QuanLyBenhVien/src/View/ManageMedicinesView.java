@@ -428,7 +428,7 @@ public class ManageMedicinesView extends javax.swing.JFrame {
                 if (parent != null) {
                     parent.setVisible(true);
                 } else {
-                    new AdminView(userCode).setVisible(true);
+                    new admin(userCode).setVisible(true);
                 }
             }
 
@@ -436,7 +436,7 @@ public class ManageMedicinesView extends javax.swing.JFrame {
                 if (parent != null) {
                     parent.setVisible(true);
                 } else {
-                    new DoctorView(userCode).setVisible(true);
+                    new doctor(userCode).setVisible(true);
                 }
             }
 
@@ -444,7 +444,7 @@ public class ManageMedicinesView extends javax.swing.JFrame {
                 if (parent != null) {
                     parent.setVisible(true);
                 } else {
-                    new LetanView(userCode).setVisible(true);
+                    new letan(userCode).setVisible(true);
                 }
             }
             default -> {

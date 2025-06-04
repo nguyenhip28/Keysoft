@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
 
-public class DoctorView extends javax.swing.JFrame {
+public class doctor extends javax.swing.JFrame {
 
     private final String userCode;
     private final DoctorController controller;
@@ -22,7 +22,7 @@ public class DoctorView extends javax.swing.JFrame {
     private final int pageSize = 5;
     private int totalRecords = 0;
 
-    public DoctorView(String userCode) {
+    public doctor(String userCode) {
         this.userCode = userCode;
         this.controller = new DoctorController(userCode);
         initComponents();
@@ -91,12 +91,12 @@ public class DoctorView extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel2.setText("LỊCH HẸN");
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setText("LỊCH HẸN");
 
-        btn_refresh.setText("Refresh");
         btn_refresh.setBackground(new java.awt.Color(0, 153, 255));
         btn_refresh.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_refresh.setText("Refresh");
         btn_refresh.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_refreshActionPerformed(evt);
@@ -105,22 +105,22 @@ public class DoctorView extends javax.swing.JFrame {
 
         cb_choose.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
 
-        jLabel1.setText("DOCTOR SITE");
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel1.setText("DOCTOR SITE");
 
-        btn_choose.setText("Tiếp tục");
         btn_choose.setBackground(new java.awt.Color(0, 153, 255));
         btn_choose.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_choose.setText("Tiếp tục");
         btn_choose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_chooseActionPerformed(evt);
             }
         });
 
-        btn_logout.setText("Logout");
         btn_logout.setBackground(new java.awt.Color(204, 0, 0));
         btn_logout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         btn_logout.setForeground(new java.awt.Color(255, 255, 255));
+        btn_logout.setText("Logout");
         btn_logout.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_logoutActionPerformed(evt);
@@ -131,16 +131,16 @@ public class DoctorView extends javax.swing.JFrame {
         display_lichhen.setRows(5);
         jScrollPane1.setViewportView(display_lichhen);
 
-        btn_next.setText(">");
         btn_next.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_next.setText(">");
         btn_next.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_nextActionPerformed(evt);
             }
         });
 
-        btn_previous.setText("<");
         btn_previous.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_previous.setText("<");
         btn_previous.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_previousActionPerformed(evt);
@@ -212,7 +212,7 @@ public class DoctorView extends javax.swing.JFrame {
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             this.setVisible(false);
-            new LoginView().setVisible(true);
+            new login().setVisible(true);
         }
     }//GEN-LAST:event_btn_logoutActionPerformed
 
@@ -277,14 +277,38 @@ public class DoctorView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DoctorView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DoctorView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DoctorView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DoctorView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(doctor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>

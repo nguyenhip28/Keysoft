@@ -5,21 +5,21 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.swing.JOptionPane;
 import DBConnect.DatabaseConnection;
-import controller.LoginController;
+import Controller.LoginController;
 import java.awt.HeadlessException;
 import java.sql.SQLException;
-import model.UserModel;
+import Model.UserModel;
 
 /**
  *
  * @author Vu Nguyen
  */
-public class LoginView extends javax.swing.JFrame {
+public class login extends javax.swing.JFrame {
 
     /**
      * Creates new form login
      */
-    public LoginView() {
+    public login() {
         initComponents();
         setLocationRelativeTo(null);
     }
@@ -145,11 +145,11 @@ public class LoginView extends javax.swing.JFrame {
             // Mở form tương ứng, truyền userCode
             switch (user.getRoleName()) {
                 case "Admin" ->
-                    new AdminView(user.getUserCode()).setVisible(true);
+                    new admin(user.getUserCode()).setVisible(true);
                 case "Bác Sĩ" ->
-                    new DoctorView(user.getUserCode()).setVisible(true);
+                    new doctor(user.getUserCode()).setVisible(true);
                 case "Lễ tân", "Le tan" ->
-                    new LetanView(user.getUserCode()).setVisible(true);
+                    new letan(user.getUserCode()).setVisible(true);
                 default -> {
                     JOptionPane.showMessageDialog(this, "Vai trò chưa được hỗ trợ.");
                     this.setVisible(true); // Hiển thị lại login nếu không xác định
@@ -182,14 +182,62 @@ public class LoginView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(login.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
@@ -209,7 +257,7 @@ public class LoginView extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new LoginView().setVisible(true);
+            new login().setVisible(true);
         });
     }
 

@@ -1,6 +1,7 @@
-
 import com.formdev.flatlaf.FlatLightLaf;
 import javax.swing.UIManager;
+import View.login;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /**
  *
@@ -12,11 +13,11 @@ public class Main {
         try {
             // Cài giao diện FlatLaf Light
             UIManager.setLookAndFeel(new FlatLightLaf());
-        } catch (Exception ex) {
+        } catch (UnsupportedLookAndFeelException ex) {
             System.err.println("Không thể cài đặt FlatLaf.");
         }
 
         // Khởi chạy form đăng nhập đầu tiên
-        new View.LoginView().setVisible(true);
+        new View.login().setVisible(true);
     }
 }

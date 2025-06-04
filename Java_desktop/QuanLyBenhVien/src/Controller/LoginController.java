@@ -1,6 +1,6 @@
-package controller;
+package Controller;
 
-import model.UserModel;
+import Model.UserModel;
 import DBConnect.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
