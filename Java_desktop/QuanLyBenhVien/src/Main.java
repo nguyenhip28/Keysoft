@@ -17,6 +17,6 @@ public class Main {
         }
 
         // Khởi chạy form đăng nhập đầu tiên
-        new View.login().setVisible(true);
+        new View.LoginView().setVisible(true);
     }
 }
