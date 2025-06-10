@@ -34,98 +34,52 @@ public class login extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel5 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jLabel2 = new javax.swing.JLabel();
-        lb_username = new javax.swing.JTextField();
-        lb_password = new javax.swing.JPasswordField();
-        btn_login = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
+        lb_username = new javax.swing.JTextField();
+        btn_login = new javax.swing.JButton();
+        lb_password = new javax.swing.JPasswordField();
+        jLabel1 = new javax.swing.JLabel();
 
         jLabel5.setText("jLabel5");
 
+        jMenuItem1.setText("jMenuItem1");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 255, 255));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel1.setText("Tên đăng nhập");
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 50)); // NOI18N
+        jLabel2.setText("Đăng nhập");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 50, -1, -1));
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jLabel2.setText("Mật khẩu");
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel3.setText("Tên đăng nhập");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 150, -1, -1));
 
-        lb_username.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lb_usernameActionPerformed(evt);
-            }
-        });
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel4.setText("Mật khẩu");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 220, -1, -1));
+        getContentPane().add(lb_username, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 170, 340, 40));
 
-        lb_password.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                lb_passwordActionPerformed(evt);
-            }
-        });
-
-        btn_login.setBackground(new java.awt.Color(0, 153, 255));
+        btn_login.setBackground(new java.awt.Color(0, 102, 204));
         btn_login.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_login.setText("LOGIN");
+        btn_login.setForeground(new java.awt.Color(255, 255, 255));
+        btn_login.setText("Đăng nhập");
         btn_login.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_loginActionPerformed(evt);
             }
         });
+        getContentPane().add(btn_login, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 310, 130, 50));
+        getContentPane().add(lb_password, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 240, 340, 40));
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel3.setText("LOGIN");
-
-        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/hospital-drawing-easy-20.png"))); // NOI18N
-        jLabel4.setText("jLabel4");
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(129, 129, 129)
-                        .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(119, 119, 119)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(39, 39, 39)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
-                            .addComponent(lb_password, javax.swing.GroupLayout.DEFAULT_SIZE, 321, Short.MAX_VALUE)
-                            .addComponent(lb_username))))
-                .addContainerGap(32, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lb_username, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(lb_password, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btn_login, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(61, 61, 61))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-        );
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/benhvien.jpg"))); // NOI18N
+        jLabel1.setFocusable(false);
+        jLabel1.setInheritsPopupMenu(false);
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -159,14 +113,6 @@ public class login extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Sai tên đăng nhập hoặc mật khẩu.");
         }
     }//GEN-LAST:event_btn_loginActionPerformed
-
-    private void lb_usernameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lb_usernameActionPerformed
-
-    }//GEN-LAST:event_lb_usernameActionPerformed
-
-    private void lb_passwordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_lb_passwordActionPerformed
-
-    }//GEN-LAST:event_lb_passwordActionPerformed
 
     public static void main(String args[]) {
 
@@ -268,6 +214,7 @@ public class login extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPasswordField lb_password;
     private javax.swing.JTextField lb_username;
     // End of variables declaration//GEN-END:variables

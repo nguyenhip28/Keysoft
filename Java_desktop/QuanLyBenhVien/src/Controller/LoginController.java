@@ -35,7 +35,7 @@ public class LoginController {
                     user = new UserModel();
                     user.setUserCode(rs.getString("user_code"));
                     user.setUsername(username);
-                    user.setPassword(null); // Không lưu password vào model
+                    user.setPassword(null); 
                     user.setRoleName(rs.getString("role_name"));
                 } else {
                     System.out.println("Sai mật khẩu cho username: " + username);

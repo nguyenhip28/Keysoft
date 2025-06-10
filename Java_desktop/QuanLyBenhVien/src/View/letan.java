@@ -78,15 +78,19 @@ public class letan extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         btn_choose = new javax.swing.JButton();
         btn_logout = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        display_lichhen = new javax.swing.JTextArea();
         btn_previous = new javax.swing.JButton();
         btn_next = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        display_lichhen = new javax.swing.JTable();
+        jLabel3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
         jLabel2.setText("LỊCH HẸN");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 80, -1, 30));
 
         btn_refresh.setBackground(new java.awt.Color(0, 153, 255));
         btn_refresh.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -96,20 +100,26 @@ public class letan extends javax.swing.JFrame {
                 btn_refreshActionPerformed(evt);
             }
         });
+        getContentPane().add(btn_refresh, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 80, -1, 30));
 
         cb_choose.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        getContentPane().add(cb_choose, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 222, 34));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel1.setText("LE TAN SITE");
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("LỄ TÂN");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 20, 130, 36));
 
         btn_choose.setBackground(new java.awt.Color(0, 153, 255));
         btn_choose.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_choose.setForeground(new java.awt.Color(255, 255, 255));
         btn_choose.setText("Tiếp tục");
         btn_choose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_chooseActionPerformed(evt);
             }
         });
+        getContentPane().add(btn_choose, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 80, -1, 34));
 
         btn_logout.setBackground(new java.awt.Color(204, 0, 0));
         btn_logout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -120,10 +130,7 @@ public class letan extends javax.swing.JFrame {
                 btn_logoutActionPerformed(evt);
             }
         });
-
-        display_lichhen.setColumns(20);
-        display_lichhen.setRows(5);
-        jScrollPane1.setViewportView(display_lichhen);
+        getContentPane().add(btn_logout, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 20, 94, 33));
 
         btn_previous.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btn_previous.setText("<");
@@ -132,6 +139,7 @@ public class letan extends javax.swing.JFrame {
                 btn_previousActionPerformed(evt);
             }
         });
+        getContentPane().add(btn_previous, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 90, 45, -1));
 
         btn_next.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btn_next.setText(">");
@@ -140,60 +148,27 @@ public class letan extends javax.swing.JFrame {
                 btn_nextActionPerformed(evt);
             }
         });
+        getContentPane().add(btn_next, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 90, 46, -1));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(cb_choose, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_choose)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btn_refresh)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
-                                .addComponent(btn_previous, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jScrollPane1)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btn_logout, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(21, 21, 21))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_logout, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btn_previous)
-                                .addComponent(btn_next))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(jLabel2)
-                                .addComponent(btn_refresh)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 272, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(btn_choose, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cb_choose, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)))
-                .addContainerGap(22, Short.MAX_VALUE))
-        );
+        display_lichhen.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane2.setViewportView(display_lichhen);
+
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 620, 280));
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/View/benhvien.jpg"))); // NOI18N
+        jLabel3.setFocusable(false);
+        jLabel3.setInheritsPopupMenu(false);
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 650, 410));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -324,10 +299,11 @@ public class letan extends javax.swing.JFrame {
     private javax.swing.JButton btn_previous;
     private javax.swing.JButton btn_refresh;
     private javax.swing.JComboBox<String> cb_choose;
-    private javax.swing.JTextArea display_lichhen;
+    private javax.swing.JTable display_lichhen;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
 
 }
