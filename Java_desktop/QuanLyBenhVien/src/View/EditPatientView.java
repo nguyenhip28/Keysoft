@@ -269,7 +269,7 @@ public class EditPatientView extends javax.swing.JFrame {
             parent.setVisible(true); // Show the parent window (benhnhan_manage)
         } else {
             // Fallback: Open a new benhnhan_manage window with userCode and userRole
-            new ManagePatientView(null, userCode, userRole).setVisible(true);
+            new PatientView(null, userCode, userRole).setVisible(true);
         }
     }//GEN-LAST:event_btn_backActionPerformed
 

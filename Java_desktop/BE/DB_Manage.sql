@@ -61,11 +61,11 @@ CREATE TABLE medicines (
 -- Prescriptions
 CREATE TABLE prescriptions (
     prescription_id INT PRIMARY KEY AUTO_INCREMENT,
-    patient_id INT,
+    patient_code VARCHAR(10),
     prescription_date DATE NOT NULL,
     notes TEXT,
     total_amount DECIMAL(12,2),
-    FOREIGN KEY (patient_id) REFERENCES patients(patient_id)
+    FOREIGN KEY (patient_code) REFERENCES patients(patient_code)
 );
 
 -- Prescription Details

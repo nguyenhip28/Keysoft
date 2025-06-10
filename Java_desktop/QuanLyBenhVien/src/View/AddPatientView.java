@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import java.sql.SQLException;
 import java.util.Date;
 import java.text.SimpleDateFormat;
-import View.ManagePatientView;
+import View.PatientView;
 
 /**
  *
@@ -26,7 +26,7 @@ public class AddPatientView extends javax.swing.JFrame {
         String newCode = "BN-001";
         try (Connection conn = DatabaseConnection.getJDBConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT patient_code FROM patients ORDER BY patient_id DESC LIMIT 1")) {
             if (rs.next()) {
-                String lastCode = rs.getString("patient_code"); // VD: BN-015
+                String lastCode = rs.getString("patient_code"); 
                 int num = Integer.parseInt(lastCode.split("-")[1]) + 1;
                 newCode = String.format("BN-%03d", num);
             }
@@ -253,7 +253,7 @@ public class AddPatientView extends javax.swing.JFrame {
             parent.setVisible(true); // Show the parent window (benhnhan_manage)
         } else {
             // Fallback: Open a new benhnhan_manage window with userCode and userRole
-            new ManagePatientView(null, userCode, userRole).setVisible(true);
+            new PatientView(null, userCode, userRole).setVisible(true);
         }
     }//GEN-LAST:event_btn_backActionPerformed
 

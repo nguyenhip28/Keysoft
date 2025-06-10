@@ -248,15 +248,15 @@ public class admin extends javax.swing.JFrame {
         switch (selectedPermission) {
             case "Quản lý lịch hẹn" -> {
                 this.setVisible(false);
-                new ManageAppointmentView(this, userCode, "admin").setVisible(true);
+                new AppointmentView(this, userCode, "admin").setVisible(true);
             }
             case "Quản lý bệnh nhân" -> {
                 this.setVisible(false);
-                new ManagePatientView(this, userCode, "admin").setVisible(true);
+                new PatientView(this, userCode, "admin").setVisible(true);
             }
             case "Quản lý kho" -> {
                 this.setVisible(false);
-                new ManageMedicinesView(this, userCode, "admin").setVisible(true);
+                new MedicinesView(this, userCode, "admin").setVisible(true);
             }
             case "Quản lý đơn thuốc" -> {
                 this.setVisible(false);

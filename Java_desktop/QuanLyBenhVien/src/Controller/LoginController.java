@@ -6,6 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class LoginController {
 
@@ -22,26 +23,35 @@ public class LoginController {
             String useDBQuery = "USE hospital_management";
             conn.prepareStatement(useDBQuery).execute();
 
-            // SQL query to get user information with role
-            String sql = "SELECT u.user_code, r.role_name FROM users u JOIN roles r ON u.role_id = r.role_id WHERE u.username = ? AND u.password = ?";
+            // Truy vấn lấy thông tin user + password hash
+            String sql = "SELECT u.user_code, u.password, r.role_name FROM users u JOIN roles r ON u.role_id = r.role_id WHERE u.username = ?";
 
             ps = conn.prepareStatement(sql);
             ps.setString(1, username);
-            ps.setString(2, password);
 
             rs = ps.executeQuery();
 
             if (rs.next()) {
-                user = new UserModel();
-                user.setUserCode(rs.getString("user_code"));
-                user.setUsername(username);
-                user.setPassword(password); // Note: In real application, you shouldn't store plain password
-                user.setRoleName(rs.getString("role_name"));
+                String storedHash = rs.getString("password");
+
+                // Kiểm tra password người dùng nhập có khớp không
+                if (BCrypt.checkpw(password, storedHash)) {
+                    user = new UserModel();
+                    user.setUserCode(rs.getString("user_code"));
+                    user.setUsername(username);
+                    user.setPassword(null); // Không lưu password vào model
+                    user.setRoleName(rs.getString("role_name"));
+                } else {
+                    System.out.println("Sai mật khẩu cho username: " + username);
+                }
+            } else {
+                System.out.println("Không tìm thấy user với username: " + username);
             }
 
         } catch (SQLException e) {
+            e.printStackTrace();
         } finally {
-            // Close resources
+            // Đóng kết nối
             try {
                 if (rs != null) {
                     rs.close();
@@ -53,6 +63,7 @@ public class LoginController {
                     conn.close();
                 }
             } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
 

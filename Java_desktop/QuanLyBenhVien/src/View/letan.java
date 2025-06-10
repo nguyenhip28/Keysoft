@@ -233,11 +233,11 @@ public class letan extends javax.swing.JFrame {
         switch (selectedPermission) {
             case "Quản lý lịch hẹn" -> {
                 this.setVisible(false);
-                new ManageAppointmentView(this, userCode, "letan").setVisible(true);
+                new AppointmentView(this, userCode, "letan").setVisible(true);
             }
             case "Quản lý bệnh nhân" -> {
                 this.setVisible(false);
-                new ManagePatientView(this, userCode, "letan").setVisible(true);
+                new PatientView(this, userCode, "letan").setVisible(true);
             }
             default ->
                 JOptionPane.showMessageDialog(this, "Quyền chưa được hỗ trợ.");

@@ -234,7 +234,7 @@ public class doctor extends javax.swing.JFrame {
         switch (selectedPermission) {
             case "Quản lý lịch hẹn" -> {
                 this.setVisible(false);
-                new ManageAppointmentView(this, userCode, "admin").setVisible(true);
+                new AppointmentView(this, userCode, "admin").setVisible(true);
             }
             case "Quản lý đơn thuốc" -> {
                 this.setVisible(false);
