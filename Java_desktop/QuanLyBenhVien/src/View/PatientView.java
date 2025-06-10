@@ -318,7 +318,6 @@ public class PatientView extends javax.swing.JFrame {
                 return;
             }
 
-            // Truyền cả object PatientModel thay vì từng field
             EditPatientView editForm = new EditPatientView(this, userCode, userRole, patient);
             editForm.setVisible(true);
             this.dispose();

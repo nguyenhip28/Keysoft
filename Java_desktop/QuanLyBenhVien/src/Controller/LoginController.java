@@ -19,13 +19,10 @@ public class LoginController {
         try {
             conn = DatabaseConnection.getJDBConnection();
 
-            // Select database
             String useDBQuery = "USE hospital_management";
             conn.prepareStatement(useDBQuery).execute();
 
-            // Truy vấn lấy thông tin user + password hash
             String sql = "SELECT u.user_code, u.password, r.role_name FROM users u JOIN roles r ON u.role_id = r.role_id WHERE u.username = ?";
-
             ps = conn.prepareStatement(sql);
             ps.setString(1, username);
 
@@ -34,7 +31,6 @@ public class LoginController {
             if (rs.next()) {
                 String storedHash = rs.getString("password");
 
-                // Kiểm tra password người dùng nhập có khớp không
                 if (BCrypt.checkpw(password, storedHash)) {
                     user = new UserModel();
                     user.setUserCode(rs.getString("user_code"));

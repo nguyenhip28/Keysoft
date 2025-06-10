@@ -69,7 +69,7 @@ public class AppointmentController {
                 stmt.setString(1, appointment.getPatientCode());
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (!rs.next()) {
-                        return false; // Patient not found
+                        return false; 
                     }
                     appointment.setFullName(rs.getString("full_name"));
                 }

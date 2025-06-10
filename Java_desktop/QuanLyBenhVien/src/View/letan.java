@@ -2,7 +2,7 @@ package View;
 
 import Controller.LetanController;
 import Model.AppointmentModel;
-import DBConnect.PermissionService;
+import Controller.PermissionController;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
@@ -12,10 +12,6 @@ public class letan extends javax.swing.JFrame {
     private String userCode;
     private LetanController controller;
 
-    private static final Map<String, String> permissionMap = Map.of(
-            "Quản lý lịch hẹn", "Quản lý lịch hẹn",
-            "Quản lý bệnh nhân", "Quản lý bệnh nhân"
-    );
     private List<String> currentPermissions;
     private int currentPage = 1;
     private int pageSize = 5;
@@ -54,7 +50,7 @@ public class letan extends javax.swing.JFrame {
 
     private void loadPermissions() {
         cb_choose.removeAllItems();
-        currentPermissions = PermissionService.getPermissionsByUserCode(userCode);
+        currentPermissions = PermissionController.getPermissionsByUserCode(userCode);
 
         if (currentPermissions.isEmpty()) {
             cb_choose.addItem("Không có quyền nào được cấp");
@@ -62,8 +58,7 @@ public class letan extends javax.swing.JFrame {
         } else {
             cb_choose.setEnabled(true);
             for (String perm : currentPermissions) {
-                String displayName = permissionMap.getOrDefault(perm, perm);
-                cb_choose.addItem(displayName);
+                cb_choose.addItem(perm);
             }
         }
     }

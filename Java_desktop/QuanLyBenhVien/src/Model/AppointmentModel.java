@@ -11,7 +11,10 @@ public class AppointmentModel {
     private LocalTime appointmentTime;
     private String symptoms;
 
-    // Constructors, getters and setters
+    // Thêm field status (không lưu vào database, chỉ để hiển thị)
+    private String status;
+
+    // Constructors
     public AppointmentModel() {
     }
 
@@ -63,5 +66,13 @@ public class AppointmentModel {
 
     public void setSymptoms(String symptoms) {
         this.symptoms = symptoms;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

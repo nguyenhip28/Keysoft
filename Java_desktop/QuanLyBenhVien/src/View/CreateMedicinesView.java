@@ -22,7 +22,7 @@ public class CreateMedicinesView extends javax.swing.JFrame {
     /**
      * Creates new form don_thuoc
      */
-    
+
     private final List<Map<String, String>> dsThuoc = new ArrayList<>();
     private String currentPatientCode = "";
     private double totalAmount = 0.0;
@@ -301,17 +301,27 @@ public class CreateMedicinesView extends javax.swing.JFrame {
                 Map<String, String> item = new HashMap<>();
                 item.put("medicine_id", medicineInfo.get("medicine_id"));
                 item.put("medicine_name", tenThuoc);
-                item.put("dosage", lieuLuong);
+                item.put("dosage", lieuLuong);  // vẫn lưu liều lượng để hiển thị
                 item.put("price", medicineInfo.get("price"));
                 item.put("unit", medicineInfo.get("unit"));
+                item.put("quantity", lieuLuong);  // thêm quantity để tính tiền
+
                 dsThuoc.add(item);
 
-                display_don_thuoc.append("Tên thuốc: " + tenThuoc + "\nLiều lượng: " + lieuLuong + "\n------------\n");
+                display_don_thuoc.append(
+                        "Tên thuốc: " + tenThuoc + "\n"
+                        + "Liều lượng: " + lieuLuong + "\n"
+                        + "Đơn giá: " + medicineInfo.get("price") + " / " + medicineInfo.get("unit") + "\n"
+                        + "------------\n"
+                );
 
-                totalAmount = dsThuoc.stream().mapToDouble(t -> Double.parseDouble(t.get("price"))).sum();
+                totalAmount = dsThuoc.stream().mapToDouble(t -> {
+                    double price = Double.parseDouble(t.get("price"));
+                    int quantity = Integer.parseInt(t.get("quantity"));  // Giả sử người nhập số lượng
+                    return price * quantity;
+                }).sum();
+
                 lb_total.setText(String.format("%.2f", totalAmount));
-            } else {
-                JOptionPane.showMessageDialog(this, "Thuốc không tồn tại trong kho.");
             }
 
         } catch (SQLException ex) {

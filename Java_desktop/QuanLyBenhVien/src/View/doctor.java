@@ -2,7 +2,7 @@ package View;
 
 import Controller.DoctorController;
 import Model.AppointmentModel;
-import DBConnect.PermissionService;
+import Controller.PermissionController;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -13,10 +13,6 @@ public class doctor extends javax.swing.JFrame {
     private final String userCode;
     private final DoctorController controller;
 
-    private static final Map<String, String> permissionMap = Map.of(
-            "Quản lý lịch hẹn", "Quản lý lịch hẹn",
-            "Quản lý đơn thuốc", "Quản lý đơn thuốc"
-    );
     private List<String> currentPermissions;
     private int currentPage = 1;
     private final int pageSize = 5;
@@ -55,7 +51,7 @@ public class doctor extends javax.swing.JFrame {
 
     private void loadPermissions() {
         cb_choose.removeAllItems();
-        currentPermissions = PermissionService.getPermissionsByUserCode(userCode);
+        currentPermissions = PermissionController.getPermissionsByUserCode(userCode);
 
         if (currentPermissions.isEmpty()) {
             cb_choose.addItem("Không có quyền nào được cấp");
@@ -63,8 +59,7 @@ public class doctor extends javax.swing.JFrame {
         } else {
             cb_choose.setEnabled(true);
             for (String perm : currentPermissions) {
-                String displayName = permissionMap.getOrDefault(perm, perm);
-                cb_choose.addItem(displayName);
+                cb_choose.addItem(perm);
             }
         }
     }
