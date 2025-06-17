@@ -6,6 +6,9 @@ import Controller.PermissionController;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 public class letan extends javax.swing.JFrame {
 
@@ -21,7 +24,7 @@ public class letan extends javax.swing.JFrame {
         this.userCode = userCode;
         this.controller = new LetanController(userCode);
         initComponents();
-        loadPermissions();
+//        loadPermissions();
         loadAppointmentsByPage(currentPage);
         setLocationRelativeTo(null);
     }
@@ -31,38 +34,46 @@ public class letan extends javax.swing.JFrame {
             totalRecords = controller.getTotalAppointments();
             List<AppointmentModel> appointments = controller.getAppointmentsByPage(page, pageSize);
 
-            display_lichhen.setText("");
+            DefaultTableModel model = (DefaultTableModel) display_lichhen.getModel();
+            model.setRowCount(0); // Xoá dữ liệu cũ
 
             for (AppointmentModel appointment : appointments) {
-                String appointmentInfo = "Mã BN: " + appointment.getPatientCode()
-                        + "\nBệnh nhân: " + appointment.getFullName()
-                        + "\nNgày: " + appointment.getAppointmentDate()
-                        + "\nGiờ: " + appointment.getAppointmentTime()
-                        + "\nTriệu chứng: " + appointment.getSymptoms()
-                        + "\n------------------------\n";
-
-                display_lichhen.append(appointmentInfo);
+                Object[] row = new Object[]{
+                    appointment.getPatientCode(),
+                    appointment.getAppointmentDate(),
+                    appointment.getAppointmentTime(),
+                    appointment.getSymptoms()
+                };
+                model.addRow(row);
             }
+
+
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            for (int i = 0; i < display_lichhen.getColumnCount(); i++) {
+                display_lichhen.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn lịch hẹn: " + ex.getMessage());
         }
     }
 
-    private void loadPermissions() {
-        cb_choose.removeAllItems();
-        currentPermissions = PermissionController.getPermissionsByUserCode(userCode);
-
-        if (currentPermissions.isEmpty()) {
-            cb_choose.addItem("Không có quyền nào được cấp");
-            cb_choose.setEnabled(false);
-        } else {
-            cb_choose.setEnabled(true);
-            for (String perm : currentPermissions) {
-                cb_choose.addItem(perm);
-            }
-        }
-    }
-
+//    private void loadPermissions() {
+//        cb_choose.removeAllItems();
+//        currentPermissions = PermissionController.getPermissionsByUserCode(userCode);
+//
+//        if (currentPermissions.isEmpty()) {
+//            cb_choose.addItem("Không có quyền nào được cấp");
+//            cb_choose.setEnabled(false);
+//        } else {
+//            cb_choose.setEnabled(true);
+//            for (String perm : currentPermissions) {
+//                cb_choose.addItem(perm);
+//            }
+//        }
+//    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -72,54 +83,20 @@ public class letan extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel2 = new javax.swing.JLabel();
-        btn_refresh = new javax.swing.JButton();
-        cb_choose = new javax.swing.JComboBox<>();
-        jLabel1 = new javax.swing.JLabel();
-        btn_choose = new javax.swing.JButton();
+        buttonGroup1 = new javax.swing.ButtonGroup();
+        buttonGroup2 = new javax.swing.ButtonGroup();
         btn_logout = new javax.swing.JButton();
-        btn_previous = new javax.swing.JButton();
-        btn_next = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         display_lichhen = new javax.swing.JTable();
-        jLabel3 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel2.setText("LỊCH HẸN");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 80, -1, 30));
-
-        btn_refresh.setBackground(new java.awt.Color(0, 153, 255));
-        btn_refresh.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_refresh.setText("Refresh");
-        btn_refresh.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_refreshActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btn_refresh, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 80, -1, 30));
-
-        cb_choose.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        getContentPane().add(cb_choose, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, 222, 34));
-
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("LỄ TÂN");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 20, 130, 36));
-
-        btn_choose.setBackground(new java.awt.Color(0, 153, 255));
-        btn_choose.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_choose.setForeground(new java.awt.Color(255, 255, 255));
-        btn_choose.setText("Tiếp tục");
-        btn_choose.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_chooseActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btn_choose, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 80, -1, 34));
 
         btn_logout.setBackground(new java.awt.Color(204, 0, 0));
         btn_logout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -130,25 +107,7 @@ public class letan extends javax.swing.JFrame {
                 btn_logoutActionPerformed(evt);
             }
         });
-        getContentPane().add(btn_logout, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 20, 94, 33));
-
-        btn_previous.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_previous.setText("<");
-        btn_previous.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_previousActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btn_previous, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 90, 45, -1));
-
-        btn_next.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_next.setText(">");
-        btn_next.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_nextActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btn_next, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 90, 46, -1));
+        getContentPane().add(btn_logout, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 210, 170, 60));
 
         display_lichhen.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -158,24 +117,62 @@ public class letan extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Mã Bệnh nhân", "Ngày hẹn", "Giờ hẹn", "Triệu chứng"
             }
         ));
         jScrollPane2.setViewportView(display_lichhen);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 620, 280));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 80, 600, 280));
 
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/View/benhvien.jpg"))); // NOI18N
-        jLabel3.setFocusable(false);
-        jLabel3.setInheritsPopupMenu(false);
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 650, 410));
+        jButton1.setBackground(new java.awt.Color(51, 153, 255));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton1.setText("Quản lý lịch hẹn");
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 90, 170, 60));
+
+        jButton2.setBackground(new java.awt.Color(51, 153, 255));
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton2.setText("Quản lý bệnh nhân");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 170, 60));
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel2.setText("Lịch hẹn ");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 10, -1, -1));
+
+        jPanel1.setBackground(new java.awt.Color(102, 204, 255));
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel1.setText("MENU");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(39, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(22, 22, 22))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(jLabel1)
+                .addContainerGap(342, Short.MAX_VALUE))
+        );
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 410));
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, 620, 410));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
-        loadAppointmentsByPage(currentPage);
-    }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void btn_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logoutActionPerformed
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
@@ -185,49 +182,9 @@ public class letan extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_logoutActionPerformed
 
-    private void btn_chooseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_chooseActionPerformed
-        int selectedIndex = cb_choose.getSelectedIndex();
-
-        if (currentPermissions == null || currentPermissions.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Bạn không có quyền nào được cấp.");
-            return;
-        }
-
-        if (selectedIndex < 0 || selectedIndex >= currentPermissions.size()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn quyền hợp lệ.");
-            return;
-        }
-
-        String selectedPermission = currentPermissions.get(selectedIndex);
-
-        switch (selectedPermission) {
-            case "Quản lý lịch hẹn" -> {
-                this.setVisible(false);
-                new AppointmentView(this, userCode, "letan").setVisible(true);
-            }
-            case "Quản lý bệnh nhân" -> {
-                this.setVisible(false);
-                new PatientView(this, userCode, "letan").setVisible(true);
-            }
-            default ->
-                JOptionPane.showMessageDialog(this, "Quyền chưa được hỗ trợ.");
-        }
-    }//GEN-LAST:event_btn_chooseActionPerformed
-
-    private void btn_previousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_previousActionPerformed
-        if (currentPage > 1) {
-            currentPage--;
-            loadAppointmentsByPage(currentPage);
-        }
-    }//GEN-LAST:event_btn_previousActionPerformed
-
-    private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
-        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
-        if (currentPage < totalPages) {
-            currentPage++;
-            loadAppointmentsByPage(currentPage);
-        }
-    }//GEN-LAST:event_btn_nextActionPerformed
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -293,16 +250,16 @@ public class letan extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btn_choose;
     private javax.swing.JButton btn_logout;
-    private javax.swing.JButton btn_next;
-    private javax.swing.JButton btn_previous;
-    private javax.swing.JButton btn_refresh;
-    private javax.swing.JComboBox<String> cb_choose;
+    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.ButtonGroup buttonGroup2;
     private javax.swing.JTable display_lichhen;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane2;
     // End of variables declaration//GEN-END:variables
 

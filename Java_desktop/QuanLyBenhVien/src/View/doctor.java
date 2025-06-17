@@ -7,6 +7,9 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 public class doctor extends javax.swing.JFrame {
 
@@ -22,7 +25,7 @@ public class doctor extends javax.swing.JFrame {
         this.userCode = userCode;
         this.controller = new DoctorController(userCode);
         initComponents();
-        loadPermissions();
+//        loadPermissions();
         loadAppointmentsByPage(currentPage);
         setLocationRelativeTo(null);
     }
@@ -32,37 +35,46 @@ public class doctor extends javax.swing.JFrame {
             totalRecords = controller.getTotalAppointments();
             List<AppointmentModel> appointments = controller.getAppointmentsByPage(page, pageSize);
 
-            display_lichhen.setText("");
+            DefaultTableModel model = (DefaultTableModel) display_lichhen.getModel();
+            model.setRowCount(0); // Xoá dữ liệu cũ
 
             for (AppointmentModel appointment : appointments) {
-                String appointmentInfo = "Mã BN: " + appointment.getPatientCode()
-                        + "\nBệnh nhân: " + appointment.getFullName()
-                        + "\nNgày: " + appointment.getAppointmentDate()
-                        + "\nGiờ: " + appointment.getAppointmentTime()
-                        + "\nTriệu chứng: " + appointment.getSymptoms()
-                        + "\n------------------------\n";
-
-                display_lichhen.append(appointmentInfo);
+                Object[] row = new Object[]{
+                    appointment.getPatientCode(),
+                    appointment.getAppointmentDate(),
+                    appointment.getAppointmentTime(),
+                    appointment.getSymptoms()
+                };
+                model.addRow(row);
             }
-        } catch (SQLException ex) {
+
+
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
+
+            for (int i = 0; i < display_lichhen.getColumnCount(); i++) {
+                display_lichhen.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Lỗi khi truy vấn lịch hẹn: " + ex.getMessage());
         }
     }
 
-    private void loadPermissions() {
-        cb_choose.removeAllItems();
-        currentPermissions = PermissionController.getPermissionsByUserCode(userCode);
-
-        if (currentPermissions.isEmpty()) {
-            cb_choose.addItem("Không có quyền nào được cấp");
-            cb_choose.setEnabled(false);
-        } else {
-            cb_choose.setEnabled(true);
-            for (String perm : currentPermissions) {
-                cb_choose.addItem(perm);
-            }
-        }
-    }
+//    private void loadPermissions() {
+//        cb_choose.removeAllItems();
+//        currentPermissions = PermissionController.getPermissionsByUserCode(userCode);
+//
+//        if (currentPermissions.isEmpty()) {
+//            cb_choose.addItem("Không có quyền nào được cấp");
+//            cb_choose.setEnabled(false);
+//        } else {
+//            cb_choose.setEnabled(true);
+//            for (String perm : currentPermissions) {
+//                cb_choose.addItem(perm);
+//            }
+//        }
+//    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -73,44 +85,28 @@ public class doctor extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jLabel2 = new javax.swing.JLabel();
-        btn_refresh = new javax.swing.JButton();
-        cb_choose = new javax.swing.JComboBox<>();
+        jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        btn_choose = new javax.swing.JButton();
         btn_logout = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        display_lichhen = new javax.swing.JTextArea();
-        btn_next = new javax.swing.JButton();
-        btn_previous = new javax.swing.JButton();
+        display_lichhen = new javax.swing.JTable();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel3.setText("Lịch hẹn ");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel2.setText("LỊCH HẸN");
-
-        btn_refresh.setBackground(new java.awt.Color(0, 153, 255));
-        btn_refresh.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_refresh.setText("Refresh");
-        btn_refresh.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_refreshActionPerformed(evt);
-            }
-        });
-
-        cb_choose.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel1.setText("DOCTOR SITE");
-
-        btn_choose.setBackground(new java.awt.Color(0, 153, 255));
-        btn_choose.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_choose.setText("Tiếp tục");
-        btn_choose.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_chooseActionPerformed(evt);
-            }
-        });
+        jLabel1.setText("MENU");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 127, -1));
 
         btn_logout.setBackground(new java.awt.Color(204, 0, 0));
         btn_logout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -121,87 +117,54 @@ public class doctor extends javax.swing.JFrame {
                 btn_logoutActionPerformed(evt);
             }
         });
+        getContentPane().add(btn_logout, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 300, 170, 60));
 
-        display_lichhen.setColumns(20);
-        display_lichhen.setRows(5);
+        jButton1.setBackground(new java.awt.Color(51, 153, 255));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton1.setText("Quản lý bệnh nhân");
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 170, 70));
+
+        jButton2.setBackground(new java.awt.Color(51, 153, 255));
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton2.setText("Quản lý đơn thuốc");
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 170, 170, 70));
+
+        jButton3.setBackground(new java.awt.Color(51, 153, 255));
+        jButton3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton3.setText("Quản lý lịch hẹn");
+        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 240, 170, 61));
+
+        display_lichhen.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Mã bệnh nhân", "Ngày hẹn", "Giờ hẹn", "Triệu chứng"
+            }
+        ));
         jScrollPane1.setViewportView(display_lichhen);
 
-        btn_next.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_next.setText(">");
-        btn_next.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_nextActionPerformed(evt);
-            }
-        });
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 80, 620, 280));
 
-        btn_previous.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_previous.setText("<");
-        btn_previous.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_previousActionPerformed(evt);
-            }
-        });
+        jPanel1.setBackground(new java.awt.Color(153, 153, 153));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 10, 0, 380));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btn_logout, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(cb_choose, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_choose)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btn_refresh)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 56, Short.MAX_VALUE)
-                                .addComponent(btn_previous, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(8, 8, 8)))))
-                .addContainerGap(18, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_logout, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(btn_previous)
-                                .addComponent(btn_next))
-                            .addComponent(btn_refresh, javax.swing.GroupLayout.PREFERRED_SIZE, 27, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(btn_choose, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(cb_choose, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 34, Short.MAX_VALUE)))
-                .addGap(16, 16, 16))
-        );
+        jPanel2.setBackground(new java.awt.Color(102, 204, 255));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 410));
+
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel4.setText("Lịch hẹn ");
+        jPanel3.add(jLabel4);
+
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, 640, 410));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
-        loadAppointmentsByPage(currentPage);
-    }//GEN-LAST:event_btn_refreshActionPerformed
 
     private void btn_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logoutActionPerformed
         int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
@@ -210,50 +173,6 @@ public class doctor extends javax.swing.JFrame {
             new login().setVisible(true);
         }
     }//GEN-LAST:event_btn_logoutActionPerformed
-
-    private void btn_chooseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_chooseActionPerformed
-        int selectedIndex = cb_choose.getSelectedIndex();
-
-        if (currentPermissions == null || currentPermissions.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Bạn không có quyền nào được cấp.");
-            return;
-        }
-
-        if (selectedIndex < 0 || selectedIndex >= currentPermissions.size()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn quyền hợp lệ.");
-            return;
-        }
-
-        String selectedPermission = currentPermissions.get(selectedIndex);
-
-        switch (selectedPermission) {
-            case "Quản lý lịch hẹn" -> {
-                this.setVisible(false);
-                new AppointmentView(this, userCode, "admin").setVisible(true);
-            }
-            case "Quản lý đơn thuốc" -> {
-                this.setVisible(false);
-                new CreateMedicinesView(this, userCode, "admin").setVisible(true);
-            }
-            default ->
-                JOptionPane.showMessageDialog(this, "Quyền chưa được hỗ trợ.");
-        }
-    }//GEN-LAST:event_btn_chooseActionPerformed
-
-    private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
-        int totalPages = (int) Math.ceil((double) totalRecords / pageSize);
-        if (currentPage < totalPages) {
-            currentPage++;
-            loadAppointmentsByPage(currentPage);
-        }
-    }//GEN-LAST:event_btn_nextActionPerformed
-
-    private void btn_previousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_previousActionPerformed
-        if (currentPage > 1) {
-            currentPage--;
-            loadAppointmentsByPage(currentPage);
-        }
-    }//GEN-LAST:event_btn_previousActionPerformed
 
     /**
      * @param args the command line arguments
@@ -320,15 +239,17 @@ public class doctor extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btn_choose;
     private javax.swing.JButton btn_logout;
-    private javax.swing.JButton btn_next;
-    private javax.swing.JButton btn_previous;
-    private javax.swing.JButton btn_refresh;
-    private javax.swing.JComboBox<String> cb_choose;
-    private javax.swing.JTextArea display_lichhen;
+    private javax.swing.JTable display_lichhen;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }
