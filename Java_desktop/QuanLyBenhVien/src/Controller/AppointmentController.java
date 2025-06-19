@@ -2,6 +2,7 @@ package Controller;
 
 import Model.AppointmentModel;
 import DBConnect.DatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,7 +20,7 @@ public class AppointmentController {
 
         try (Connection conn = DatabaseConnection.getJDBConnection()) {
             String query = """
-                SELECT a.patient_code, p.full_name, a.appointment_date, a.appointment_time, a.symptoms
+                SELECT a.appointment_id, a.patient_code, p.full_name, a.appointment_date, a.appointment_time, a.symptoms
                 FROM appointments a
                 JOIN patients p ON a.patient_code = p.patient_code
                 ORDER BY a.appointment_date DESC, a.appointment_time DESC
@@ -32,13 +33,15 @@ public class AppointmentController {
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        appointments.add(new AppointmentModel(
+                        AppointmentModel model = new AppointmentModel(
+                                rs.getInt("appointment_id"),
                                 rs.getString("patient_code"),
                                 rs.getString("full_name"),
                                 rs.getDate("appointment_date").toLocalDate(),
                                 rs.getTime("appointment_time").toLocalTime(),
                                 rs.getString("symptoms")
-                        ));
+                        );
+                        appointments.add(model);
                     }
                 }
             }
@@ -69,7 +72,7 @@ public class AppointmentController {
                 stmt.setString(1, appointment.getPatientCode());
                 try (ResultSet rs = stmt.executeQuery()) {
                     if (!rs.next()) {
-                        return false; 
+                        return false;
                     }
                     appointment.setFullName(rs.getString("full_name"));
                 }

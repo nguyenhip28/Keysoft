@@ -18,7 +18,7 @@ public class PrescriptionController {
             try {
                 ps.setInt(2, Integer.parseInt(keyword));
             } catch (NumberFormatException e) {
-                ps.setInt(2, -1); // Giá trị không hợp lệ để tránh khớp ID
+                ps.setInt(2, -1);
             }
 
             ResultSet rs = ps.executeQuery();
@@ -35,12 +35,14 @@ public class PrescriptionController {
     }
 
     // Lưu đơn thuốc và chi tiết đơn thuốc, trả về prescription_id nếu thành công, -1 nếu lỗi
-    public int savePrescription(String patientCode, String notes, double totalAmount, List<Map<String, String>> medicines) throws SQLException {
+    public int savePrescription(String patientCode, int appointmentId, String notes, double totalAmount, List<Map<String, String>> medicines)
+            throws SQLException {
         int prescriptionId = -1;
 
         try (Connection conn = DatabaseConnection.getJDBConnection()) {
-            conn.setAutoCommit(false); // Bắt đầu transaction
+            conn.setAutoCommit(false); // Transaction
 
+            // ❌ ĐÃ BỎ appointment_id khỏi câu INSERT này vì bảng prescriptions không có cột đó
             String insertPrescription = "INSERT INTO prescriptions(patient_code, notes, total_amount) VALUES (?, ?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(insertPrescription, Statement.RETURN_GENERATED_KEYS)) {
                 ps.setString(1, patientCode);
@@ -62,12 +64,23 @@ public class PrescriptionController {
                     for (Map<String, String> med : medicines) {
                         detailPs.setInt(1, prescriptionId);
                         detailPs.setInt(2, Integer.parseInt(med.get("medicine_id")));
-                        detailPs.setInt(3, 1); // mặc định số lượng 1
+                        detailPs.setInt(3, Integer.parseInt(med.getOrDefault("quantity", "1")));
                         detailPs.setString(4, med.get("dosage"));
                         detailPs.addBatch();
                     }
                     detailPs.executeBatch();
                 }
+
+                // ✅ Gắn vào bảng trung gian appointment_prescriptions
+                if (appointmentId > 0) {
+                    String linkSql = "INSERT INTO appointment_prescriptions (appointment_id, prescription_id) VALUES (?, ?)";
+                    try (PreparedStatement linkStmt = conn.prepareStatement(linkSql)) {
+                        linkStmt.setInt(1, appointmentId);
+                        linkStmt.setInt(2, prescriptionId);
+                        linkStmt.executeUpdate();
+                    }
+                }
+
                 conn.commit();
             } else {
                 conn.rollback();
@@ -79,30 +92,6 @@ public class PrescriptionController {
         }
 
         return prescriptionId;
-    }
-
-    // Lấy đơn thuốc mới nhất theo mã bệnh nhân
-    public Map<String, Object> getLatestPrescriptionByPatientCode(String patientCode) throws SQLException {
-        Map<String, Object> result = new HashMap<>();
-
-        try (Connection conn = DatabaseConnection.getJDBConnection()) {
-            String sql = "SELECT * FROM prescriptions WHERE patient_code = ? ORDER BY prescription_id DESC LIMIT 1";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, patientCode);
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                int prescriptionId = rs.getInt("prescription_id");
-                result.put("prescription_id", prescriptionId);
-                result.put("notes", rs.getString("notes"));
-                result.put("total_amount", rs.getDouble("total_amount"));
-
-                // Chi tiết thuốc
-                result.put("medicines", getPrescriptionDetails(conn, prescriptionId));
-            }
-        }
-
-        return result;
     }
 
     // Lấy danh sách tất cả đơn thuốc và chi tiết
@@ -145,10 +134,47 @@ public class PrescriptionController {
                 item.put("dosage", rs.getString("dosage"));
                 item.put("price", String.valueOf(rs.getDouble("price")));
                 item.put("unit", rs.getString("unit"));
+                item.put("quantity", String.valueOf(rs.getInt("quantity")));
                 medicines.add(item);
             }
         }
 
         return medicines;
+    }
+
+    public String getPatientNameByCode(String patientCode) throws SQLException {
+        String name = null;
+        String sql = "SELECT full_name FROM patients WHERE patient_code = ?";
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, patientCode);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                name = rs.getString("full_name");
+            }
+        }
+        return name;
+    }
+
+    public Map<String, Object> getLatestPrescriptionByPatientCode(String patientCode) throws SQLException {
+        Map<String, Object> prescription = new HashMap<>();
+
+        try (Connection conn = DatabaseConnection.getJDBConnection()) {
+            String sql = "SELECT * FROM prescriptions WHERE patient_code = ? ORDER BY prescription_id DESC LIMIT 1";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, patientCode);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        int prescriptionId = rs.getInt("prescription_id");
+                        prescription.put("prescription_id", prescriptionId);
+                        prescription.put("patient_code", rs.getString("patient_code"));
+                        prescription.put("notes", rs.getString("notes"));
+                        prescription.put("total_amount", rs.getDouble("total_amount"));
+                        prescription.put("medicines", getPrescriptionDetails(conn, prescriptionId));
+                    }
+                }
+            }
+        }
+
+        return prescription;
     }
 }

@@ -2,6 +2,7 @@ package View;
 
 import Controller.PrescriptionController;
 import DBConnect.DatabaseConnection;
+import Model.AppointmentModel;
 import java.lang.ModuleLayer.Controller;
 import java.sql.*;
 import java.util.*;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -26,10 +28,25 @@ public class CreateMedicinesView extends javax.swing.JFrame {
     private final List<Map<String, String>> dsThuoc = new ArrayList<>();
     private String currentPatientCode = "";
     private double totalAmount = 0.0;
+    private AppointmentModel selectedAppointment;
 
     public CreateMedicinesView() {
         initComponents();
         setLocationRelativeTo(null);
+        loadAllPrescriptions();
+        this.selectedAppointment = selectedAppointment;
+        this.pack();
+
+    }
+
+    public CreateMedicinesView(javax.swing.JFrame parent, String userCode, String userRole, AppointmentModel selectedAppointment) {
+        this.parent = parent;
+        this.userCode = userCode;
+        this.userRole = userRole;
+        this.selectedAppointment = selectedAppointment;
+        initComponents();
+        setLocationRelativeTo(null);
+        loadAllPrescriptions();
 
     }
 
@@ -37,9 +54,41 @@ public class CreateMedicinesView extends javax.swing.JFrame {
         this.parent = parent;
         this.userCode = userCode;
         this.userRole = userRole;
+        this.selectedAppointment = null; // Gán null mặc định
         initComponents();
         setLocationRelativeTo(null);
+        loadAllPrescriptions();
+    }
 
+    private void loadAllPrescriptions() {
+        try {
+            PrescriptionController controller = new PrescriptionController();
+            List<Map<String, Object>> allPrescriptions = controller.getAllPrescriptions();
+
+            DefaultTableModel model = (DefaultTableModel) display_don_thuoc.getModel();
+            model.setRowCount(0); // Xóa dữ liệu cũ nếu có
+
+            for (Map<String, Object> prescription : allPrescriptions) {
+                String maBN = (String) prescription.get("patient_code");
+                String ghiChu = (String) prescription.get("notes");
+                double tongTien = (double) prescription.get("total_amount");
+                @SuppressWarnings("unchecked")
+                List<Map<String, String>> thuocList = (List<Map<String, String>>) prescription.get("medicines");
+
+                for (Map<String, String> thuoc : thuocList) {
+                    model.addRow(new Object[]{
+                        maBN,
+                        thuoc.get("medicine_name"),
+                        thuoc.get("dosage"),
+                        ghiChu,
+                        String.format("%.2f", tongTien)
+                    });
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách đơn thuốc: " + e.getMessage());
+        }
     }
 
     /**
@@ -52,200 +101,203 @@ public class CreateMedicinesView extends javax.swing.JFrame {
     private void initComponents() {
 
         jTextField1 = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        lb_ten_thuoc = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        btn_add = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        display_don_thuoc = new javax.swing.JTextArea();
-        jLabel4 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        btn_search = new javax.swing.JButton();
         btn_done = new javax.swing.JButton();
         jLabel5 = new javax.swing.JLabel();
-        lb_total = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        lb_ten_thuoc = new javax.swing.JTextField();
         lb_benhnhan_code = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
         lb_lieu_luong = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
         lb_notes = new javax.swing.JTextArea();
-        btn_search = new javax.swing.JButton();
-        btn_refresh = new javax.swing.JButton();
+        lb_total = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        display_don_thuoc = new javax.swing.JTable();
+        btn_add = new javax.swing.JButton();
         btn_back = new javax.swing.JButton();
 
         jTextField1.setText("jTextField1");
 
+        jButton1.setBackground(new java.awt.Color(51, 153, 255));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jButton1.setText("<");
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMaximumSize(null);
+        setSize(new java.awt.Dimension(760, 646));
+        getContentPane().add(jLabel6, java.awt.BorderLayout.CENTER);
 
-        jLabel1.setText("ĐƠN THUỐC");
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel2.setText("Tên thuốc");
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        jLabel3.setText("Liều lượng");
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        btn_add.setText("Thêm vào đơn");
-        btn_add.setBackground(new java.awt.Color(0, 153, 255));
-        btn_add.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_add.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_addActionPerformed(evt);
-            }
-        });
-
-        display_don_thuoc.setColumns(20);
-        display_don_thuoc.setRows(5);
-        jScrollPane2.setViewportView(display_don_thuoc);
-
-        jLabel4.setText("Đơn thuốc");
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        btn_done.setText("Kê đơn");
-        btn_done.setBackground(new java.awt.Color(0, 153, 255));
-        btn_done.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_done.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_doneActionPerformed(evt);
-            }
-        });
-
-        jLabel5.setText("Tổng tiền:");
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        jLabel7.setText("Mã bệnh nhân");
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        jLabel8.setText("Ghi chú");
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        lb_notes.setColumns(20);
-        lb_notes.setRows(5);
-        jScrollPane3.setViewportView(lb_notes);
-
-        btn_search.setText("Tìm đơn");
         btn_search.setBackground(new java.awt.Color(0, 153, 255));
         btn_search.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_search.setText("Tìm đơn");
         btn_search.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_searchActionPerformed(evt);
             }
         });
 
-        btn_refresh.setText("Refresh");
-        btn_refresh.setBackground(new java.awt.Color(0, 153, 255));
-        btn_refresh.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_refresh.addActionListener(new java.awt.event.ActionListener() {
+        btn_done.setBackground(new java.awt.Color(0, 153, 255));
+        btn_done.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_done.setText("Kê đơn");
+        btn_done.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_refreshActionPerformed(evt);
+                btn_doneActionPerformed(evt);
             }
         });
 
-        btn_back.setText("Back");
-        btn_back.setBackground(new java.awt.Color(0, 153, 255));
-        btn_back.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel5.setText("Tổng tiền:");
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel1.setText("ĐƠN THUỐC");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel2.setText("Tên thuốc");
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel7.setText("Mã bệnh nhân");
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setText("Liều lượng");
+
+        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel8.setText("Ghi chú");
+
+        lb_notes.setColumns(20);
+        lb_notes.setRows(5);
+        jScrollPane3.setViewportView(lb_notes);
+
+        display_don_thuoc.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Mã BN", "Tên thuốc", "Liều lượng", "Ghi chú", "Tổng tiền"
+            }
+        ));
+        jScrollPane1.setViewportView(display_don_thuoc);
+
+        btn_add.setBackground(new java.awt.Color(0, 153, 255));
+        btn_add.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_add.setText("Thêm vào đơn");
+        btn_add.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_addActionPerformed(evt);
+            }
+        });
+
+        btn_back.setBackground(new java.awt.Color(51, 153, 255));
+        btn_back.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btn_back.setText("<");
         btn_back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_backActionPerformed(evt);
             }
         });
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 218, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(219, 219, 219)
+                        .addComponent(btn_back, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel2)
-                            .addComponent(jLabel3)
-                            .addComponent(lb_ten_thuoc)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lb_ten_thuoc, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel7)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lb_benhnhan_code, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btn_search))
-                            .addComponent(lb_lieu_luong)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane3)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btn_refresh))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(70, 70, 70)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btn_done, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lb_total, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(btn_back, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(41, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(25, 25, 25)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(btn_back, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(jLabel7)
-                    .addComponent(btn_refresh))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lb_benhnhan_code, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lb_total)
+                            .addComponent(jLabel3)
                             .addComponent(jLabel5)
-                            .addComponent(lb_total))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lb_benhnhan_code, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_search, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 0, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lb_ten_thuoc, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(lb_lieu_luong, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel8)
-                        .addGap(3, 3, 3)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(11, 11, 11)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_done, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(25, 25, 25))
+                            .addComponent(lb_lieu_luong, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btn_done, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_search, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1))
+                .addContainerGap())
         );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(btn_back))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel8)
+                            .addComponent(jLabel3))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(lb_lieu_luong, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel5)
+                                .addGap(11, 11, 11)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(lb_total, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btn_done, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jScrollPane3)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel7)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lb_benhnhan_code, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel2))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(btn_search, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 38, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lb_ten_thuoc, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_doneActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_doneActionPerformed
+        currentPatientCode = lb_benhnhan_code.getText().trim();
+
+        if (currentPatientCode.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã bệnh nhân đang trống!");
+            return;
+        }
+
         if (dsThuoc.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Chưa có thuốc nào trong đơn.");
             return;
@@ -253,86 +305,69 @@ public class CreateMedicinesView extends javax.swing.JFrame {
 
         String notes = lb_notes.getText().trim();
         PrescriptionController controller = new PrescriptionController();
-        int result = 0;
-        try {
-            result = controller.savePrescription(currentPatientCode, notes, totalAmount, dsThuoc);
-        } catch (SQLException ex) {
-            Logger.getLogger(CreateMedicinesView.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        if (result > 0) {
-            JOptionPane.showMessageDialog(this, "Đã lưu đơn thuốc thành công!");
-
-            // Reset
-            currentPatientCode = "";
-            dsThuoc.clear();
-            display_don_thuoc.setText("");
-            lb_total.setText("0.00");
-            lb_notes.setText("");
-            totalAmount = 0.0;
-        } else {
-            JOptionPane.showMessageDialog(this, "Lưu đơn thuốc thất bại.");
-        }
-    }//GEN-LAST:event_btn_doneActionPerformed
-
-    private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
-        String tenThuoc = lb_ten_thuoc.getText().trim();
-        String lieuLuong = lb_lieu_luong.getText().trim();
-        String patientCodeInput = lb_benhnhan_code.getText().trim();
-
-        if (tenThuoc.isEmpty() || lieuLuong.isEmpty() || patientCodeInput.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã bệnh nhân, tên thuốc và liều lượng.");
-            return;
-        }
 
         try {
-            PrescriptionController controller = new PrescriptionController();
-            Map<String, String> medicineInfo = controller.searchMedicine(tenThuoc);
+            // 
+            if (selectedAppointment == null) {
+                JOptionPane.showMessageDialog(this, "Chưa chọn lịch hẹn để gán đơn thuốc.");
+                return;
+            }
 
-            if (medicineInfo != null) {
-                // Kiểm tra nếu patient_code thay đổi thì reset danh sách thuốc
-                if (!patientCodeInput.equals(currentPatientCode)) {
-                    currentPatientCode = patientCodeInput;
-                    dsThuoc.clear();
-                    display_don_thuoc.setText("");
-                    totalAmount = 0.0;
+            int appointmentId = selectedAppointment.getAppointmentId();  // ✅ Lấy ID lịch hẹn từ model
+
+            int result = controller.savePrescription(currentPatientCode, appointmentId, notes, totalAmount, dsThuoc);
+
+            if (result > 0) {
+                JOptionPane.showMessageDialog(this, "Đã lưu đơn thuốc thành công!");
+
+                // Reset
+                currentPatientCode = "";
+                dsThuoc.clear();
+                totalAmount = 0.0;
+
+                lb_total.setText("0.00");
+                lb_notes.setText("");
+                lb_benhnhan_code.setText("");
+                lb_ten_thuoc.setText("");
+                lb_lieu_luong.setText("");
+                selectedAppointment = null;
+
+                // Load lại tất cả đơn thuốc
+                List<Map<String, Object>> allPrescriptions = controller.getAllPrescriptions();
+                DefaultTableModel model = (DefaultTableModel) display_don_thuoc.getModel();
+                model.setRowCount(0);
+
+                for (Map<String, Object> prescription : allPrescriptions) {
+                    String maBN = (String) prescription.get("patient_code");
+                    String ghiChu = (String) prescription.get("notes");
+                    double tongTien = (double) prescription.get("total_amount");
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, String>> thuocList = (List<Map<String, String>>) prescription.get("medicines");
+
+                    for (Map<String, String> thuoc : thuocList) {
+                        model.addRow(new Object[]{
+                            maBN,
+                            thuoc.get("medicine_name"),
+                            thuoc.get("dosage"),
+                            ghiChu,
+                            String.format("%.2f", tongTien)
+                        });
+                    }
                 }
-
-                Map<String, String> item = new HashMap<>();
-                item.put("medicine_id", medicineInfo.get("medicine_id"));
-                item.put("medicine_name", tenThuoc);
-                item.put("dosage", lieuLuong);  // vẫn lưu liều lượng để hiển thị
-                item.put("price", medicineInfo.get("price"));
-                item.put("unit", medicineInfo.get("unit"));
-                item.put("quantity", lieuLuong);  // thêm quantity để tính tiền
-
-                dsThuoc.add(item);
-
-                display_don_thuoc.append(
-                        "Tên thuốc: " + tenThuoc + "\n"
-                        + "Liều lượng: " + lieuLuong + "\n"
-                        + "Đơn giá: " + medicineInfo.get("price") + " / " + medicineInfo.get("unit") + "\n"
-                        + "------------\n"
-                );
-
-                totalAmount = dsThuoc.stream().mapToDouble(t -> {
-                    double price = Double.parseDouble(t.get("price"));
-                    int quantity = Integer.parseInt(t.get("quantity"));  // Giả sử người nhập số lượng
-                    return price * quantity;
-                }).sum();
-
-                lb_total.setText(String.format("%.2f", totalAmount));
+            } else {
+                JOptionPane.showMessageDialog(this, "Lưu đơn thuốc thất bại.");
             }
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi tìm thuốc: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Lỗi khi lưu đơn thuốc: " + ex.getMessage());
         }
-    }//GEN-LAST:event_btn_addActionPerformed
+    }//GEN-LAST:event_btn_doneActionPerformed
 
     @SuppressWarnings("unchecked")
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         String patientCodeInput = lb_benhnhan_code.getText().trim();
+
         if (patientCodeInput.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập mã bệnh nhân.");
             return;
@@ -342,110 +377,116 @@ public class CreateMedicinesView extends javax.swing.JFrame {
             PrescriptionController controller = new PrescriptionController();
             Map<String, Object> data = controller.getLatestPrescriptionByPatientCode(patientCodeInput);
 
-            if (!data.isEmpty()) {
-                int prescriptionId = (int) data.get("prescription_id");
-                String notes = (String) data.get("notes");
-                double total = (double) data.get("total_amount");
-                List<Map<String, String>> thuocList = (List<Map<String, String>>) data.get("medicines");
-
-                currentPatientCode = patientCodeInput;
-                dsThuoc.clear();
-                display_don_thuoc.setText("");
-                lb_notes.setText(notes != null ? notes : "");
-                totalAmount = total;
-                lb_total.setText(String.format("%.2f", total));
-
-                for (Map<String, String> thuoc : thuocList) {
-                    dsThuoc.add(thuoc);
-                    display_don_thuoc.append("Bệnh nhân:" + patientCodeInput + "\nTên thuốc: " + thuoc.get("medicine_name")
-                            + "\nLiều lượng: " + thuoc.get("dosage")
-                            + "\nĐơn vị: " + thuoc.get("unit")
-                            + "\nGiá: " + thuoc.get("price") + "\n------------\n");
-                }
-
-            } else {
+            if (data.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy đơn thuốc cho bệnh nhân này.");
+                return;
+            }
+
+            currentPatientCode = patientCodeInput;
+            dsThuoc.clear();
+
+            String notes = (String) data.get("notes");
+            double total = (double) data.get("total_amount");
+            List<Map<String, String>> thuocList = (List<Map<String, String>>) data.get("medicines");
+
+            lb_notes.setText(notes != null ? notes : "");
+            lb_total.setText(String.format("%.2f", total));
+            totalAmount = total;
+
+            DefaultTableModel model = (DefaultTableModel) display_don_thuoc.getModel();
+            model.setRowCount(0);
+
+            for (Map<String, String> thuoc : thuocList) {
+                dsThuoc.add(thuoc);
+
+                double donGia = Double.parseDouble(thuoc.get("price"));
+                int soLuong = Integer.parseInt(thuoc.get("quantity"));
+                double thanhTien = donGia * soLuong;
+
+                model.addRow(new Object[]{
+                    thuoc.get("medicine_name"),
+                    thuoc.get("dosage"),
+                    thuoc.get("unit"),
+                    donGia,
+                    soLuong,
+                    thanhTien
+                });
             }
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi tìm đơn thuốc.");
+            JOptionPane.showMessageDialog(this, "Lỗi khi tìm đơn thuốc: " + ex.getMessage());
         }
     }//GEN-LAST:event_btn_searchActionPerformed
 
-    @SuppressWarnings("unchecked")
-    private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
+    private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
+        currentPatientCode = lb_benhnhan_code.getText().trim();
+
+        if (currentPatientCode.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã bệnh nhân trước khi thêm thuốc.");
+            return;
+        }
+
+        String tenThuoc = lb_ten_thuoc.getText().trim();
+        String lieuLuong = lb_lieu_luong.getText().trim();
+        String notes = lb_notes.getText().trim(); // Lấy ghi chú
+
+        if (tenThuoc.isEmpty() || lieuLuong.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập tên thuốc và liều lượng.");
+            return;
+        }
+
         try {
             PrescriptionController controller = new PrescriptionController();
-            List<Map<String, Object>> prescriptions = controller.getAllPrescriptions();
+            Map<String, String> medInfo = controller.searchMedicine(tenThuoc);
 
-            display_don_thuoc.setText("");
-            totalAmount = 0.0;
-
-            for (Map<String, Object> pres : prescriptions) {
-                int prescriptionId = (int) pres.get("prescription_id");
-                String patientCode = (String) pres.get("patient_code");
-                String notes = (String) pres.get("notes");
-                double total = (double) pres.get("total_amount");
-                List<Map<String, String>> thuocList = (List<Map<String, String>>) pres.get("medicines");
-
-                display_don_thuoc.append("Đơn thuốc #" + prescriptionId + ":\n");
-                display_don_thuoc.append("Mã bệnh nhân: " + patientCode + "\n");
-                display_don_thuoc.append("Ghi chú: " + (notes != null ? notes : "") + "\n");
-                display_don_thuoc.append("Thuốc:\n");
-
-                for (Map<String, String> item : thuocList) {
-                    display_don_thuoc.append("  - Tên thuốc: " + item.get("medicine_name") + "\n"
-                            + " - Liều lượng: " + item.get("dosage") + "\n"
-                            + " - Đơn vị: " + item.get("unit") + ", \n"
-                            + " - Giá: " + item.get("price") + "\n");
-                }
-
-                display_don_thuoc.append("Tổng tiền đơn thuốc: " + total + "\n");
-                display_don_thuoc.append("-------------------------\n");
+            if (medInfo.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy thuốc.");
+                return;
             }
+
+            Map<String, String> thuoc = new HashMap<>();
+            thuoc.put("medicine_id", medInfo.get("medicine_id"));
+            thuoc.put("medicine_name", medInfo.get("medicine_name"));
+            thuoc.put("dosage", lieuLuong);
+            thuoc.put("unit", medInfo.get("unit"));
+            thuoc.put("price", medInfo.get("price"));
+            thuoc.put("quantity", "1");
+
+            dsThuoc.add(thuoc);
+
+            // Hiển thị thuốc lên bảng
+            DefaultTableModel model = (DefaultTableModel) display_don_thuoc.getModel();
+            double price = Double.parseDouble(medInfo.get("price"));
+            double amount = price * 1;
+
+            model.addRow(new Object[]{
+                currentPatientCode,
+                medInfo.get("medicine_name"),
+                lieuLuong,
+                notes, // Ghi chú được thêm vào bảng
+                String.format("%.2f", amount)
+            });
+
+            totalAmount += amount;
+            lb_total.setText(String.format("%.2f", totalAmount));
+
+            lb_ten_thuoc.setText("");
+            lb_lieu_luong.setText("");
 
         } catch (SQLException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách đơn thuốc.");
+            JOptionPane.showMessageDialog(this, "Lỗi khi tìm thuốc: " + ex.getMessage());
         }
-    }//GEN-LAST:event_btn_refreshActionPerformed
+    }//GEN-LAST:event_btn_addActionPerformed
 
     private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
-        this.dispose(); // đóng cửa sổ hiện tại
+        this.dispose(); // Close the current add_benhnhan window
         if (parent != null) {
-            parent.setVisible(true); // mở lại form letan
-        }
-
-        switch (userRole.toLowerCase()) {
-            case "admin" -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                } else {
-                    new admin(userCode).setVisible(true);
-                }
-            }
-
-            case "doctor" -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                } else {
-                    new doctor(userCode).setVisible(true);
-                }
-            }
-
-            case "letan" -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                } else {
-                    new letan(userCode).setVisible(true);
-                }
-            }
-            default -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                }
-            }
+            parent.setVisible(true); // Show the parent window (benhnhan_manage)
+        } else {
+            // Fallback: Open a new benhnhan_manage window with userCode and userRole
+            new PatientView(null, userCode, userRole).setVisible(true);
         }
     }//GEN-LAST:event_btn_backActionPerformed
 
@@ -481,7 +522,6 @@ public class CreateMedicinesView extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new CreateMedicinesView().setVisible(true);
         });
     }
 
@@ -489,18 +529,18 @@ public class CreateMedicinesView extends javax.swing.JFrame {
     private javax.swing.JButton btn_add;
     private javax.swing.JButton btn_back;
     private javax.swing.JButton btn_done;
-    private javax.swing.JButton btn_refresh;
     private javax.swing.JButton btn_search;
-    private javax.swing.JTextArea display_don_thuoc;
+    private javax.swing.JTable display_don_thuoc;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField lb_benhnhan_code;

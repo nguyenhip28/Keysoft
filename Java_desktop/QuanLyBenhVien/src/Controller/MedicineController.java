@@ -2,18 +2,17 @@ package Controller;
 
 import Model.MedicineModel;
 import DBConnect.DatabaseConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MedicineController {
 
+    // Đếm tổng số thuốc
     public int getTotalMedicines() throws SQLException {
-        try (Connection conn = DatabaseConnection.getJDBConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM medicines")) {
+        String sql = "SELECT COUNT(*) FROM medicines";
+        try (Connection conn = DatabaseConnection.getJDBConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
 
             if (rs.next()) {
                 return rs.getInt(1);
@@ -22,11 +21,13 @@ public class MedicineController {
         return 0;
     }
 
+    // Phân trang danh sách thuốc
     public List<MedicineModel> getMedicinesByPage(int page, int pageSize) throws SQLException {
         List<MedicineModel> medicines = new ArrayList<>();
         int offset = (page - 1) * pageSize;
+        String sql = "SELECT * FROM medicines LIMIT ? OFFSET ?";
 
-        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement("SELECT * FROM medicines LIMIT ? OFFSET ?")) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, pageSize);
             stmt.setInt(2, offset);
@@ -46,6 +47,7 @@ public class MedicineController {
         return medicines;
     }
 
+    // Thêm thuốc mới
     public boolean addMedicine(MedicineModel medicine) throws SQLException {
         String sql = "INSERT INTO medicines (medicine_name, unit, quantity, price) VALUES (?, ?, ?, ?)";
 
@@ -69,6 +71,7 @@ public class MedicineController {
         return false;
     }
 
+    // Xóa thuốc theo tên
     public boolean deleteMedicine(String medicineName) throws SQLException {
         String sql = "DELETE FROM medicines WHERE medicine_name = ?";
 
@@ -79,10 +82,12 @@ public class MedicineController {
         }
     }
 
+    // Lấy danh sách thuốc tồn kho dưới ngưỡng
     public List<MedicineModel> getLowStockMedicines(int threshold) throws SQLException {
         List<MedicineModel> medicines = new ArrayList<>();
+        String sql = "SELECT * FROM medicines WHERE quantity < ?";
 
-        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement("SELECT * FROM medicines WHERE quantity < ?")) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, threshold);
 
@@ -101,9 +106,48 @@ public class MedicineController {
         return medicines;
     }
 
+    // Tìm thuốc theo tên
+    public MedicineModel getMedicineByName(String medicineName) throws SQLException {
+        String sql = "SELECT * FROM medicines WHERE medicine_name = ?";
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, medicineName);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return new MedicineModel(
+                            rs.getInt("medicine_id"),
+                            rs.getString("medicine_name"),
+                            rs.getString("unit"),
+                            rs.getInt("quantity"),
+                            rs.getDouble("price")
+                    );
+                }
+            }
+        }
+        return null;
+    }
+
+    // Reset AUTO_INCREMENT
     public void resetAutoIncrement() throws SQLException {
+        String sql = "ALTER TABLE medicines AUTO_INCREMENT = 1";
         try (Connection conn = DatabaseConnection.getJDBConnection(); Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate("ALTER TABLE medicines AUTO_INCREMENT = 1");
+
+            stmt.executeUpdate(sql);
+        }
+    }
+
+    // Cập nhật thông tin thuốc (nếu cần)
+    public boolean updateMedicine(MedicineModel medicine) throws SQLException {
+        String sql = "UPDATE medicines SET unit = ?, quantity = ?, price = ? WHERE medicine_name = ?";
+
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, medicine.getUnit());
+            stmt.setInt(2, medicine.getQuantity());
+            stmt.setDouble(3, medicine.getPrice());
+            stmt.setString(4, medicine.getMedicineName());
+
+            return stmt.executeUpdate() > 0;
         }
     }
 }

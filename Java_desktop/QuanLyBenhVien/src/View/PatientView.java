@@ -14,8 +14,9 @@ public class PatientView extends javax.swing.JFrame {
     private String userCode;
     private String userRole;
     private int currentPage = 1;
-    private final int pageSize = 5;
+    private final int pageSize = 8;
     private PatientController controller;
+    private int totalPatients = 0;
 
     public PatientView(javax.swing.JFrame parent, String userCode, String userRole) {
         this.parent = parent;
@@ -25,10 +26,31 @@ public class PatientView extends javax.swing.JFrame {
         initComponents();
         loadPatients(currentPage);
         setLocationRelativeTo(null);
+        loadTotalPatients();
+        loadPatients(currentPage);
+        updatePaginationButtons();
     }
 
     public void reloadCurrentPage() {
         loadPatients(currentPage);  // hoặc loadPatients(1) nếu muốn luôn về trang đầu
+    }
+
+    private void loadTotalPatients() {
+        try {
+            totalPatients = controller.getTotalPatients();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi đếm số bệnh nhân!");
+        }
+    }
+
+    private void updatePaginationButtons() {
+        int totalPages = (int) Math.ceil((double) totalPatients / pageSize);
+
+        btn_frist.setEnabled(currentPage > 1);
+        btn_back.setEnabled(currentPage > 1);
+
+        btn_next.setEnabled(currentPage < totalPages);
+        btn_last.setEnabled(currentPage < totalPages);
     }
 
     private void loadPatients(int page) {
@@ -75,13 +97,6 @@ public class PatientView extends javax.swing.JFrame {
         btn_add1 = new javax.swing.JButton();
         btn_previous1 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        btn_medicine = new javax.swing.JButton();
-        btn_appointment = new javax.swing.JButton();
-        btn_patient = new javax.swing.JButton();
-        btn_mng_thuoc = new javax.swing.JButton();
-        btn_logout = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         btn_search = new javax.swing.JButton();
         btn_edit = new javax.swing.JButton();
@@ -89,13 +104,16 @@ public class PatientView extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         btn_back = new javax.swing.JButton();
         btn_next = new javax.swing.JButton();
-        btn_add = new javax.swing.JButton();
+        btn_viewhistory = new javax.swing.JButton();
         lb_benhnhan_code = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         display_benhnhan = new javax.swing.JTable();
-        btn_add2 = new javax.swing.JButton();
-        jPanel4 = new javax.swing.JPanel();
+        btn_add = new javax.swing.JButton();
+        jPanel15 = new javax.swing.JPanel();
+        btn_last = new javax.swing.JButton();
+        btn_frist = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         btn_add1.setText("Thêm bệnh nhân");
         btn_add1.addActionListener(new java.awt.event.ActionListener() {
@@ -111,93 +129,6 @@ public class PatientView extends javax.swing.JFrame {
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel2.setBackground(new java.awt.Color(102, 204, 255));
-
-        btn_medicine.setBackground(new java.awt.Color(51, 153, 255));
-        btn_medicine.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_medicine.setText("Quản lý đơn thuốc");
-        btn_medicine.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_medicineActionPerformed(evt);
-            }
-        });
-
-        btn_appointment.setBackground(new java.awt.Color(51, 153, 255));
-        btn_appointment.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_appointment.setText("Quản lý lịch hẹn");
-        btn_appointment.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_appointmentActionPerformed(evt);
-            }
-        });
-
-        btn_patient.setBackground(new java.awt.Color(0, 153, 255));
-        btn_patient.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_patient.setText("Quản lý bệnh nhân");
-        btn_patient.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_patientActionPerformed(evt);
-            }
-        });
-
-        btn_mng_thuoc.setBackground(new java.awt.Color(51, 153, 255));
-        btn_mng_thuoc.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_mng_thuoc.setText("Quản lý kho thuốc");
-        btn_mng_thuoc.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_mng_thuocActionPerformed(evt);
-            }
-        });
-
-        btn_logout.setBackground(new java.awt.Color(204, 0, 0));
-        btn_logout.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        btn_logout.setForeground(new java.awt.Color(255, 255, 255));
-        btn_logout.setText("Logout");
-        btn_logout.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_logoutActionPerformed(evt);
-            }
-        });
-
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel4.setText("MENU");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btn_medicine, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_appointment, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_patient, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_mng_thuoc, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btn_logout, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(468, 468, 468))
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(32, 32, 32)
-                .addComponent(jLabel4)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jLabel4)
-                .addGap(18, 18, 18)
-                .addComponent(btn_patient, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_medicine, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_appointment, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_mng_thuoc, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_logout, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
         jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -209,7 +140,7 @@ public class PatientView extends javax.swing.JFrame {
                 btn_searchActionPerformed(evt);
             }
         });
-        jPanel3.add(btn_search, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 350, 150, 40));
+        jPanel3.add(btn_search, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, 150, 40));
 
         btn_edit.setBackground(new java.awt.Color(0, 153, 255));
         btn_edit.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -219,7 +150,7 @@ public class PatientView extends javax.swing.JFrame {
                 btn_editActionPerformed(evt);
             }
         });
-        jPanel3.add(btn_edit, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 350, 150, 40));
+        jPanel3.add(btn_edit, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 110, 150, 40));
 
         btn_delete.setBackground(new java.awt.Color(0, 153, 255));
         btn_delete.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -229,33 +160,44 @@ public class PatientView extends javax.swing.JFrame {
                 btn_deleteActionPerformed(evt);
             }
         });
-        jPanel3.add(btn_delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 300, 150, 40));
+        jPanel3.add(btn_delete, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 60, 150, 40));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel1.setText("Quản lý bệnh nhân");
         jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 0, -1, -1));
 
         btn_back.setText("<");
-        jPanel3.add(btn_back, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 290, -1, -1));
-
-        btn_next.setText(">");
-        jPanel3.add(btn_next, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 290, -1, -1));
-
-        btn_add.setBackground(new java.awt.Color(0, 153, 255));
-        btn_add.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_add.setText("Lịch sử khám");
-        btn_add.addActionListener(new java.awt.event.ActionListener() {
+        btn_back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_addActionPerformed(evt);
+                btn_backActionPerformed(evt);
             }
         });
-        jPanel3.add(btn_add, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 350, 140, 40));
-        jPanel3.add(lb_benhnhan_code, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 310, 150, 30));
+        jPanel3.add(btn_back, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 380, -1, -1));
+
+        btn_next.setText(">");
+        btn_next.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_nextActionPerformed(evt);
+            }
+        });
+        jPanel3.add(btn_next, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 380, -1, -1));
+
+        btn_viewhistory.setBackground(new java.awt.Color(0, 153, 255));
+        btn_viewhistory.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_viewhistory.setText("Lịch sử khám");
+        btn_viewhistory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_viewhistoryActionPerformed(evt);
+            }
+        });
+        jPanel3.add(btn_viewhistory, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 110, 150, 40));
+        jPanel3.add(lb_benhnhan_code, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, 150, 30));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel3.setText("Nhập thông tin bệnh nhân");
-        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 290, -1, -1));
+        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, -1, -1));
 
+        display_benhnhan.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         display_benhnhan.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -269,50 +211,72 @@ public class PatientView extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(display_benhnhan);
 
-        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 70, 610, 210));
+        jPanel3.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, 610, 200));
 
-        btn_add2.setBackground(new java.awt.Color(0, 153, 255));
-        btn_add2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_add2.setText("Thêm bệnh nhân");
-        btn_add2.addActionListener(new java.awt.event.ActionListener() {
+        btn_add.setBackground(new java.awt.Color(0, 153, 255));
+        btn_add.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_add.setText("Thêm bệnh nhân");
+        btn_add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_add2ActionPerformed(evt);
+                btn_addActionPerformed(evt);
             }
         });
-        jPanel3.add(btn_add2, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 300, 140, 40));
+        jPanel3.add(btn_add, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 60, 150, 40));
 
-        jPanel4.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel15.setBackground(new java.awt.Color(204, 204, 204));
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout jPanel15Layout = new javax.swing.GroupLayout(jPanel15);
+        jPanel15.setLayout(jPanel15Layout);
+        jPanel15Layout.setHorizontalGroup(
+            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 10, Short.MAX_VALUE)
         );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        jPanel15Layout.setVerticalGroup(
+            jPanel15Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 90, Short.MAX_VALUE)
         );
 
-        jPanel3.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 300, 10, 90));
+        jPanel3.add(jPanel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 60, 10, 90));
+
+        btn_last.setText("Cuối");
+        btn_last.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_lastActionPerformed(evt);
+            }
+        });
+        jPanel3.add(btn_last, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 380, -1, -1));
+
+        btn_frist.setText("Đầu");
+        btn_frist.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_fristActionPerformed(evt);
+            }
+        });
+        jPanel3.add(btn_frist, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 380, -1, -1));
+
+        jButton1.setBackground(new java.awt.Color(51, 153, 255));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jButton1.setText("<");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 10, 50, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 660, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 680, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -321,40 +285,16 @@ public class PatientView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_add1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_add1ActionPerformed
-        // TODO add your handling code here:
+        AddPatientView addForm = new AddPatientView(this, userCode, userRole);
+        addForm.setVisible(true);
+        this.setVisible(false);
     }//GEN-LAST:event_btn_add1ActionPerformed
 
-    private void btn_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logoutActionPerformed
-        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            this.setVisible(false); // Ẩn form hiện tại
-            new login().setVisible(true); // Mở lại trang login
-        }
-    }//GEN-LAST:event_btn_logoutActionPerformed
-
-    private void btn_mng_thuocActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_mng_thuocActionPerformed
-        MedicinesView addForm = new MedicinesView(this, userCode, userCode);
+    private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
+        AddPatientView addForm = new AddPatientView(this, userCode, userRole);
         addForm.setVisible(true);
         this.setVisible(false);
-    }//GEN-LAST:event_btn_mng_thuocActionPerformed
-
-    private void btn_patientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_patientActionPerformed
-        PatientView addForm = new PatientView(this, userCode, userCode);
-        addForm.setVisible(true);
-        this.setVisible(false);
-    }//GEN-LAST:event_btn_patientActionPerformed
-
-    private void btn_appointmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_appointmentActionPerformed
-        AppointmentView addForm = new AppointmentView(this, userCode, userCode);
-        addForm.setVisible(true);
-        this.setVisible(false);
-    }//GEN-LAST:event_btn_appointmentActionPerformed
-
-    private void btn_medicineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_medicineActionPerformed
-        CreateMedicinesView addForm = new CreateMedicinesView(this, userCode, userCode);
-        addForm.setVisible(true);
-        this.setVisible(false);
-    }//GEN-LAST:event_btn_medicineActionPerformed
+    }//GEN-LAST:event_btn_addActionPerformed
 
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         String input = lb_benhnhan_code.getText().trim();
@@ -393,11 +333,18 @@ public class PatientView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_searchActionPerformed
 
-    private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
-        AddPatientView addForm = new AddPatientView(this, userCode, userRole);
-        addForm.setVisible(true);
-        this.setVisible(false);
-    }//GEN-LAST:event_btn_addActionPerformed
+    private void btn_viewhistoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_viewhistoryActionPerformed
+        int selectedRow = display_benhnhan.getSelectedRow();
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn bệnh nhân để xem lịch sử.");
+            return;
+        }
+
+        String patientCode = display_benhnhan.getValueAt(selectedRow, 0).toString();
+        AppointmentDetailView detailView = new AppointmentDetailView(patientCode);
+        detailView.setVisible(true);
+    }//GEN-LAST:event_btn_viewhistoryActionPerformed
 
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
         int selectedRow = display_benhnhan.getSelectedRow();
@@ -458,9 +405,44 @@ public class PatientView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_editActionPerformed
 
-    private void btn_add2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_add2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btn_add2ActionPerformed
+    private void btn_fristActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_fristActionPerformed
+        currentPage = 1;
+        loadPatients(currentPage);
+        updatePaginationButtons();
+    }//GEN-LAST:event_btn_fristActionPerformed
+
+    private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
+        if (currentPage > 1) {
+            currentPage--;
+            loadPatients(currentPage);
+            updatePaginationButtons();
+        }
+    }//GEN-LAST:event_btn_backActionPerformed
+
+    private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
+        int totalPages = (int) Math.ceil((double) totalPatients / pageSize);
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadPatients(currentPage);
+            updatePaginationButtons();
+        }
+    }//GEN-LAST:event_btn_nextActionPerformed
+
+    private void btn_lastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_lastActionPerformed
+        currentPage = (int) Math.ceil((double) totalPatients / pageSize);
+        loadPatients(currentPage);
+        updatePaginationButtons();
+    }//GEN-LAST:event_btn_lastActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        this.dispose(); // Close the current add_benhnhan window
+        if (parent != null) {
+            parent.setVisible(true); // Show the parent window (benhnhan_manage)
+        } else {
+            // Fallback: Open a new benhnhan_manage window with userCode and userRole
+            new PatientView(null, userCode, userRole).setVisible(true);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -504,26 +486,22 @@ public class PatientView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_add;
     private javax.swing.JButton btn_add1;
-    private javax.swing.JButton btn_add2;
-    private javax.swing.JButton btn_appointment;
     private javax.swing.JButton btn_back;
     private javax.swing.JButton btn_delete;
     private javax.swing.JButton btn_edit;
-    private javax.swing.JButton btn_logout;
-    private javax.swing.JButton btn_medicine;
-    private javax.swing.JButton btn_mng_thuoc;
+    private javax.swing.JButton btn_frist;
+    private javax.swing.JButton btn_last;
     private javax.swing.JButton btn_next;
-    private javax.swing.JButton btn_patient;
     private javax.swing.JButton btn_previous1;
     private javax.swing.JButton btn_search;
+    private javax.swing.JButton btn_viewhistory;
     private javax.swing.JTable display_benhnhan;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField lb_benhnhan_code;
     // End of variables declaration//GEN-END:variables

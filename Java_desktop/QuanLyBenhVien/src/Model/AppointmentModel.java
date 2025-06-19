@@ -5,21 +5,22 @@ import java.time.LocalTime;
 
 public class AppointmentModel {
 
+    private int appointmentId; // ✅ Thêm dòng này
     private String patientCode;
     private String fullName;
     private LocalDate appointmentDate;
     private LocalTime appointmentTime;
     private String symptoms;
-
-    // Thêm field status (không lưu vào database, chỉ để hiển thị)
     private String status;
 
     // Constructors
     public AppointmentModel() {
     }
 
-    public AppointmentModel(String patientCode, String fullName, LocalDate appointmentDate,
-            LocalTime appointmentTime, String symptoms) {
+    // Constructor đầy đủ (dùng khi SELECT từ DB)
+    public AppointmentModel(int appointmentId, String patientCode, String fullName,
+            LocalDate appointmentDate, LocalTime appointmentTime, String symptoms) {
+        this.appointmentId = appointmentId;
         this.patientCode = patientCode;
         this.fullName = fullName;
         this.appointmentDate = appointmentDate;
@@ -27,7 +28,23 @@ public class AppointmentModel {
         this.symptoms = symptoms;
     }
 
+    public AppointmentModel(String patientCode, LocalDate appointmentDate,
+            LocalTime appointmentTime, String symptoms) {
+        this.patientCode = patientCode;
+        this.appointmentDate = appointmentDate;
+        this.appointmentTime = appointmentTime;
+        this.symptoms = symptoms;
+    }
+
     // Getters and Setters
+    public int getAppointmentId() {
+        return appointmentId;
+    }
+
+    public void setAppointmentId(int appointmentId) {
+        this.appointmentId = appointmentId;
+    }
+
     public String getPatientCode() {
         return patientCode;
     }

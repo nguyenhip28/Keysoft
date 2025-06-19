@@ -121,4 +121,14 @@ public class PatientController {
             return pstmt.executeUpdate() > 0;
         }
     }
+
+    public int getTotalPatients() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM patients";
+        try (Connection conn = DatabaseConnection.getJDBConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        }
+        return 0;
+    }
 }

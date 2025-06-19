@@ -5,7 +5,10 @@ import Model.MedicineModel;
 import java.awt.HeadlessException;
 import java.sql.SQLException;
 import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 public class MedicinesView extends javax.swing.JFrame {
 
@@ -13,7 +16,7 @@ public class MedicinesView extends javax.swing.JFrame {
     private String userCode;
     private String userRole;
     private int currentPage = 1;
-    private final int rowsPerPage = 5;
+    private final int rowsPerPage = 10;
     private int totalRecords = 0;
     private MedicineController controller;
 
@@ -26,6 +29,7 @@ public class MedicinesView extends javax.swing.JFrame {
         loadTotalRecords();
         loadMedicinesData(currentPage);
         setLocationRelativeTo(null);
+        updatePaginationButtons();
 
     }
 
@@ -38,8 +42,6 @@ public class MedicinesView extends javax.swing.JFrame {
     }
 
     private void loadMedicinesData(int page) {
-        display_thuoc.setText("");
-
         try {
             List<MedicineModel> medicines = controller.getMedicinesByPage(page, rowsPerPage);
 
@@ -49,19 +51,45 @@ public class MedicinesView extends javax.swing.JFrame {
                 return;
             }
 
+            // Lấy model và reset bảng
+            DefaultTableModel model = (DefaultTableModel) display_thuoc.getModel();
+            model.setRowCount(0);
+
+            // Thêm từng dòng thuốc vào bảng
             for (MedicineModel medicine : medicines) {
-                display_thuoc.append(String.format(
-                        "ID: %d\nTên thuốc: %s\nĐơn vị: %s\nSố lượng: %d\nGiá tiền: %.2f\n-----------------------\n",
-                        medicine.getMedicineId(),
-                        medicine.getMedicineName(),
-                        medicine.getUnit(),
-                        medicine.getQuantity(),
-                        medicine.getPrice()
-                ));
+                model.addRow(new Object[]{
+                    medicine.getMedicineName(),
+                    medicine.getUnit(),
+                    medicine.getQuantity(),
+                    String.format("%.2f", medicine.getPrice())
+                });
             }
-        } catch (HeadlessException | SQLException e) {
+
+            // Căn giữa nội dung cột
+            DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+            centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+
+            for (int i = 0; i < display_thuoc.getColumnCount(); i++) {
+                display_thuoc.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+            }
+
+            // Cập nhật trạng thái nút phân trang
+            updatePaginationButtons();
+
+        } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Lỗi khi tải danh sách thuốc!");
+            e.printStackTrace();
         }
+    }
+
+    private void updatePaginationButtons() {
+        int totalPages = (int) Math.ceil((double) totalRecords / rowsPerPage);
+
+        btn_first.setEnabled(currentPage > 1);
+        btn_back.setEnabled(currentPage > 1);
+
+        btn_next.setEnabled(currentPage < totalPages);
+        btn_last.setEnabled(currentPage < totalPages);
     }
 
     /**
@@ -73,218 +101,244 @@ public class MedicinesView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        btn_check_sl1 = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        lb_gia_tien = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        btn_delete = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        btn_check_sl = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        btn_add = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         lb_thuoc_name = new javax.swing.JTextField();
         lb_don_vi = new javax.swing.JTextField();
         lb_so_luong = new javax.swing.JTextField();
-        lb_gia_tien = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        btn_add = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        display_thuoc = new javax.swing.JTextArea();
-        jLabel6 = new javax.swing.JLabel();
-        btn_refresh = new javax.swing.JButton();
-        lb_thuoc_input = new javax.swing.JTextField();
-        jLabel7 = new javax.swing.JLabel();
-        btn_delete = new javax.swing.JButton();
-        btn_check_sl = new javax.swing.JButton();
+        display_thuoc = new javax.swing.JTable();
+        btn_search = new javax.swing.JButton();
         btn_back = new javax.swing.JButton();
-        btn_previous = new javax.swing.JButton();
         btn_next = new javax.swing.JButton();
+        btn_last = new javax.swing.JButton();
+        btn_first = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+
+        btn_check_sl1.setBackground(new java.awt.Color(0, 153, 255));
+        btn_check_sl1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_check_sl1.setText("Kiểm tra số lượng");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jLabel1.setText("KHO THUỐC");
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel2.setText("Tên thuốc");
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel2.setText("Tên thuốc");
 
-        jLabel3.setText("Đơn vị");
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        jLabel4.setText("Số lượng");
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        jLabel5.setText("Giá tiền");
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        btn_add.setText("Thêm thuốc");
-        btn_add.setBackground(new java.awt.Color(0, 153, 255));
-        btn_add.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_add.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_addActionPerformed(evt);
-            }
-        });
-
-        display_thuoc.setColumns(20);
-        display_thuoc.setRows(5);
-        jScrollPane1.setViewportView(display_thuoc);
-
-        jLabel6.setText("Danh sách");
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        btn_refresh.setText("Refresh");
-        btn_refresh.setBackground(new java.awt.Color(0, 153, 255));
-        btn_refresh.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_refresh.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_refreshActionPerformed(evt);
-            }
-        });
-
-        jLabel7.setText("Điền tên thuốc");
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-
-        btn_delete.setText("Xóa thuốc");
         btn_delete.setBackground(new java.awt.Color(0, 153, 255));
         btn_delete.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_delete.setText("Xóa thuốc");
         btn_delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_deleteActionPerformed(evt);
             }
         });
 
-        btn_check_sl.setText("Kiểm tra số lượng");
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setText("Đơn vị");
+
         btn_check_sl.setBackground(new java.awt.Color(0, 153, 255));
         btn_check_sl.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_check_sl.setText("Kiểm tra sl");
         btn_check_sl.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_check_slActionPerformed(evt);
             }
         });
 
-        btn_back.setText("Back");
-        btn_back.setBackground(new java.awt.Color(0, 153, 255));
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel4.setText("Số lượng");
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel5.setText("Giá tiền");
+
+        btn_add.setBackground(new java.awt.Color(0, 153, 255));
+        btn_add.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_add.setText("Thêm thuốc");
+        btn_add.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_addActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel1.setText("KHO THUỐC");
+
+        display_thuoc.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Tên thuốc", "Giá tiền", "Đơn vị", "Số lượng"
+            }
+        ));
+        jScrollPane1.setViewportView(display_thuoc);
+
+        btn_search.setBackground(new java.awt.Color(0, 153, 255));
+        btn_search.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_search.setText("Tìm thuốc");
+        btn_search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_searchActionPerformed(evt);
+            }
+        });
+
         btn_back.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_back.setText("<");
         btn_back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_backActionPerformed(evt);
             }
         });
 
-        btn_previous.setText("<");
-        btn_previous.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_previous.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_previousActionPerformed(evt);
-            }
-        });
-
-        btn_next.setText(">");
         btn_next.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_next.setText(">");
         btn_next.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_nextActionPerformed(evt);
             }
         });
 
+        btn_last.setText("Cuối");
+        btn_last.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_lastActionPerformed(evt);
+            }
+        });
+
+        btn_first.setText("Đầu");
+        btn_first.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_firstActionPerformed(evt);
+            }
+        });
+
+        jButton1.setBackground(new java.awt.Color(51, 153, 255));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jButton1.setText("<");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(26, 26, 26)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel5)
+                            .addComponent(lb_gia_tien, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lb_thuoc_name, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(35, 35, 35)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel3)
+                            .addComponent(lb_so_luong, javax.swing.GroupLayout.DEFAULT_SIZE, 134, Short.MAX_VALUE)
+                            .addComponent(lb_don_vi))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btn_delete, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_add, javax.swing.GroupLayout.Alignment.TRAILING))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btn_search, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btn_check_sl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(48, 48, 48))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(0, 573, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(189, 189, 189)
+                                .addComponent(btn_first)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btn_back)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btn_next)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btn_last))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 617, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(160, 160, 160)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(24, 24, 24))))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton1))
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btn_search, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btn_check_sl, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel3))
+                        .addGap(5, 5, 5)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lb_thuoc_name, javax.swing.GroupLayout.DEFAULT_SIZE, 35, Short.MAX_VALUE)
+                            .addComponent(lb_don_vi))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel5))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lb_gia_tien, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lb_so_luong, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_back)
+                    .addComponent(btn_next)
+                    .addComponent(btn_last)
+                    .addComponent(btn_first))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lb_thuoc_name, javax.swing.GroupLayout.PREFERRED_SIZE, 167, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lb_gia_tien, javax.swing.GroupLayout.DEFAULT_SIZE, 190, Short.MAX_VALUE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lb_don_vi, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(lb_so_luong, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(lb_thuoc_input, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(jLabel7)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGap(94, 94, 94)
-                                        .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 49, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(30, 30, 30)
-                        .addComponent(jLabel1)))
-                .addGap(30, 30, 30)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(btn_check_sl)
-                            .addGap(78, 78, 78))
-                        .addComponent(btn_back, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_refresh)
-                        .addGap(32, 32, 32)
-                        .addComponent(btn_previous, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(36, 36, 36))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(45, 45, 45)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(lb_thuoc_name, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addGap(5, 5, 5)
-                                .addComponent(lb_don_vi, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4)
-                                .addGap(1, 1, 1)
-                                .addComponent(lb_so_luong, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(1, 1, 1)
-                                .addComponent(lb_gia_tien, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(18, 18, 18)
-                        .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(41, 41, 41)
-                        .addComponent(jLabel7)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(lb_thuoc_input, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(89, 89, 89))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btn_back, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(37, 37, 37)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_refresh)
-                            .addComponent(btn_previous)
-                            .addComponent(btn_next))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_check_sl, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(17, 17, 17))))
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -297,182 +351,165 @@ public class MedicinesView extends javax.swing.JFrame {
         String priceStr = lb_gia_tien.getText().trim();
 
         if (name.isEmpty() || unit.isEmpty() || quantityStr.isEmpty() || priceStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin!");
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin thuốc.");
             return;
         }
 
         try {
-            MedicineModel medicine = new MedicineModel();
-            medicine.setMedicineName(name);
-            medicine.setUnit(unit);
-            medicine.setQuantity(Integer.parseInt(quantityStr));
-            medicine.setPrice(Double.parseDouble(priceStr));
+            int quantity = Integer.parseInt(quantityStr);
+            double price = Double.parseDouble(priceStr);
 
-            boolean success = controller.addMedicine(medicine);
+            MedicineModel med = new MedicineModel(0, name, unit, quantity, price);
+            boolean success = controller.addMedicine(med);
 
             if (success) {
                 JOptionPane.showMessageDialog(this, "Thêm thuốc thành công!");
-                display_thuoc.append(String.format(
-                        "ID: %d\nTên thuốc: %s\nĐơn vị: %s\nSố lượng: %d\nGiá tiền: %.2f\n-----------------------\n",
-                        medicine.getMedicineId(),
-                        medicine.getMedicineName(),
-                        medicine.getUnit(),
-                        medicine.getQuantity(),
-                        medicine.getPrice()
-                ));
-
-                // Clear input fields
+                loadTotalRecords();
+                loadMedicinesData(currentPage);
                 lb_thuoc_name.setText("");
                 lb_don_vi.setText("");
                 lb_so_luong.setText("");
                 lb_gia_tien.setText("");
-
-                // Refresh total records
-                loadTotalRecords();
             } else {
                 JOptionPane.showMessageDialog(this, "Thêm thuốc thất bại!");
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Số lượng hoặc giá tiền không hợp lệ!");
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi thêm thuốc vào cơ sở dữ liệu!");
+        } catch (NumberFormatException | SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi: " + ex.getMessage());
         }
     }//GEN-LAST:event_btn_addActionPerformed
 
-    private void btn_refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_refreshActionPerformed
-        loadTotalRecords();
-        currentPage = 1;
-        loadMedicinesData(currentPage);
-    }//GEN-LAST:event_btn_refreshActionPerformed
-
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
-        String nameToDelete = lb_thuoc_input.getText().trim();
-
-        if (nameToDelete.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập tên thuốc cần xóa!");
+        String name = lb_thuoc_name.getText().trim();
+        if (name.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập tên thuốc để xoá.");
             return;
         }
 
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "Bạn có chắc chắn muốn xóa thuốc \"" + nameToDelete + "\" không?",
-                "Xác nhận xóa",
-                JOptionPane.YES_NO_OPTION
-        );
+        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xoá thuốc này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            try {
+                boolean deleted = controller.deleteMedicine(name);
+                if (deleted) {
+                    JOptionPane.showMessageDialog(this, "Đã xoá thuốc.");
+                    loadTotalRecords();
+                    loadMedicinesData(currentPage);
 
-        if (confirm != JOptionPane.YES_OPTION) {
-            return;
-        }
-
-        try {
-            boolean deleted = controller.deleteMedicine(nameToDelete);
-
-            if (deleted) {
-                JOptionPane.showMessageDialog(this, "Đã xóa thuốc \"" + nameToDelete + "\" thành công!");
-                lb_thuoc_input.setText("");
-
-                // Check if table is empty to reset auto increment
-                if (controller.getTotalMedicines() == 0) {
-                    controller.resetAutoIncrement();
+                    // Reset input
+                    lb_thuoc_name.setText("");
+                    lb_don_vi.setText("");
+                    lb_so_luong.setText("");
+                    lb_gia_tien.setText("");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy hoặc không xoá được thuốc.");
                 }
-
-                // Refresh data
-                btn_refreshActionPerformed(evt);
-            } else {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy thuốc tên \"" + nameToDelete + "\"!");
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi xoá thuốc: " + ex.getMessage());
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi xóa thuốc khỏi cơ sở dữ liệu!");
         }
-
     }//GEN-LAST:event_btn_deleteActionPerformed
 
     private void btn_check_slActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_check_slActionPerformed
-        display_thuoc.setText("");
-
         try {
-            List<MedicineModel> lowStockMedicines = controller.getLowStockMedicines(10);
-
-            if (lowStockMedicines.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Tất cả thuốc đều còn đủ số lượng!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
-                return;
+            List<MedicineModel> lowStockList = controller.getLowStockMedicines(10);
+            if (lowStockList.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Tất cả thuốc đều đủ số lượng.");
+            } else {
+                StringBuilder message = new StringBuilder("Các thuốc dưới 10 đơn vị:\n");
+                for (MedicineModel med : lowStockList) {
+                    message.append("- ").append(med.getMedicineName())
+                            .append(" (SL: ").append(med.getQuantity()).append(")\n");
+                }
+                JOptionPane.showMessageDialog(this, message.toString());
             }
-
-            StringBuilder warning = new StringBuilder("Các thuốc sắp hết hàng (số lượng < 10):\n");
-            for (MedicineModel medicine : lowStockMedicines) {
-                warning.append(String.format(
-                        "ID: %d\nTên thuốc: %s\nĐơn vị: %s\nSố lượng: %d\nGiá tiền: %.2f\n-----------------------\n",
-                        medicine.getMedicineId(),
-                        medicine.getMedicineName(),
-                        medicine.getUnit(),
-                        medicine.getQuantity(),
-                        medicine.getPrice()
-                ));
-            }
-
-            JOptionPane.showMessageDialog(this, warning.toString(), "Cảnh báo", JOptionPane.WARNING_MESSAGE);
-            display_thuoc.setText(warning.toString());
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Lỗi khi kiểm tra số lượng thuốc!", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi kiểm tra số lượng: " + ex.getMessage());
         }
     }//GEN-LAST:event_btn_check_slActionPerformed
 
+    private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
+        String name = lb_thuoc_name.getText().trim();
+
+        if (name.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập tên thuốc để tìm.");
+            return;
+        }
+
+        try {
+            MedicineModel medicine = controller.getMedicineByName(name);
+
+            DefaultTableModel model = (DefaultTableModel) display_thuoc.getModel();
+            model.setRowCount(0); // Xoá dữ liệu cũ
+
+            if (medicine != null) {
+                // Hiển thị thông tin vào các ô
+                lb_don_vi.setText(medicine.getUnit());
+                lb_so_luong.setText(String.valueOf(medicine.getQuantity()));
+                lb_gia_tien.setText(String.format("%.2f", medicine.getPrice()));
+
+                // Thêm dòng vào bảng
+                model.addRow(new Object[]{
+                    medicine.getMedicineName(),
+                    medicine.getUnit(),
+                    medicine.getQuantity(),
+                    String.format("%.2f", medicine.getPrice())
+                });
+
+                // Căn giữa lại cột
+                DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+                centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+                for (int i = 0; i < display_thuoc.getColumnCount(); i++) {
+                    display_thuoc.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+                }
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy thuốc!");
+            }
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi tìm thuốc: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }//GEN-LAST:event_btn_searchActionPerformed
+
     private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
-        this.dispose(); // đóng cửa sổ hiện tại
-        if (parent != null) {
-            parent.setVisible(true); // mở lại form letan
-        }
-
-        switch (userRole.toLowerCase()) {
-            case "admin" -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                } else {
-                    new admin(userCode).setVisible(true);
-                }
-            }
-
-            case "doctor" -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                } else {
-                    new doctor(userCode).setVisible(true);
-                }
-            }
-
-            case "letan" -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                } else {
-                    new letan(userCode).setVisible(true);
-                }
-            }
-            default -> {
-                if (parent != null) {
-                    parent.setVisible(true);
-                }
-            }
-        }
-    }//GEN-LAST:event_btn_backActionPerformed
-
-    private void btn_previousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_previousActionPerformed
         if (currentPage > 1) {
             currentPage--;
             loadMedicinesData(currentPage);
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Đã là trang đầu tiên.");
         }
-    }//GEN-LAST:event_btn_previousActionPerformed
+    }//GEN-LAST:event_btn_backActionPerformed
+
+    private void btn_firstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_firstActionPerformed
+        if (currentPage != 1) {
+            currentPage = 1;
+            loadMedicinesData(currentPage);
+        }
+    }//GEN-LAST:event_btn_firstActionPerformed
 
     private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
         int totalPages = (int) Math.ceil((double) totalRecords / rowsPerPage);
         if (currentPage < totalPages) {
             currentPage++;
             loadMedicinesData(currentPage);
-        } else {
-            javax.swing.JOptionPane.showMessageDialog(this, "Đã là trang cuối cùng.");
         }
     }//GEN-LAST:event_btn_nextActionPerformed
+
+    private void btn_lastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_lastActionPerformed
+        int totalPages = (int) Math.ceil((double) totalRecords / rowsPerPage);
+        if (currentPage != totalPages) {
+            currentPage = totalPages;
+            loadMedicinesData(currentPage);
+        }
+    }//GEN-LAST:event_btn_lastActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        this.dispose(); // Close the current add_benhnhan window
+        if (parent != null) {
+            parent.setVisible(true); // Show the parent window (benhnhan_manage)
+        } else {
+            // Fallback: Open a new benhnhan_manage window with userCode and userRole
+            new PatientView(null, userCode, userRole).setVisible(true);
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -517,23 +554,24 @@ public class MedicinesView extends javax.swing.JFrame {
     private javax.swing.JButton btn_add;
     private javax.swing.JButton btn_back;
     private javax.swing.JButton btn_check_sl;
+    private javax.swing.JButton btn_check_sl1;
     private javax.swing.JButton btn_delete;
+    private javax.swing.JButton btn_first;
+    private javax.swing.JButton btn_last;
     private javax.swing.JButton btn_next;
-    private javax.swing.JButton btn_previous;
-    private javax.swing.JButton btn_refresh;
-    private javax.swing.JTextArea display_thuoc;
+    private javax.swing.JButton btn_search;
+    private javax.swing.JTable display_thuoc;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField lb_don_vi;
     private javax.swing.JTextField lb_gia_tien;
     private javax.swing.JTextField lb_so_luong;
-    private javax.swing.JTextField lb_thuoc_input;
     private javax.swing.JTextField lb_thuoc_name;
     // End of variables declaration//GEN-END:variables
 }

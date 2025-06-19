@@ -48,7 +48,6 @@ public class doctor extends javax.swing.JFrame {
                 model.addRow(row);
             }
 
-
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
             centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
 
@@ -75,7 +74,6 @@ public class doctor extends javax.swing.JFrame {
 //            }
 //        }
 //    }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -88,13 +86,13 @@ public class doctor extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         btn_logout = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         display_lichhen = new javax.swing.JTable();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
+        btn_medicine = new javax.swing.JButton();
+        btn_appointment = new javax.swing.JButton();
+        btn_patient = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
 
@@ -119,21 +117,7 @@ public class doctor extends javax.swing.JFrame {
         });
         getContentPane().add(btn_logout, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 300, 170, 60));
 
-        jButton1.setBackground(new java.awt.Color(51, 153, 255));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton1.setText("Quản lý bệnh nhân");
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 170, 70));
-
-        jButton2.setBackground(new java.awt.Color(51, 153, 255));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setText("Quản lý đơn thuốc");
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 170, 170, 70));
-
-        jButton3.setBackground(new java.awt.Color(51, 153, 255));
-        jButton3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton3.setText("Quản lý lịch hẹn");
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 240, 170, 61));
-
+        display_lichhen.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         display_lichhen.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -153,6 +137,57 @@ public class doctor extends javax.swing.JFrame {
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 10, 0, 380));
 
         jPanel2.setBackground(new java.awt.Color(102, 204, 255));
+
+        btn_medicine.setBackground(new java.awt.Color(51, 153, 255));
+        btn_medicine.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_medicine.setText("Quản lý đơn thuốc");
+        btn_medicine.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_medicineActionPerformed(evt);
+            }
+        });
+
+        btn_appointment.setBackground(new java.awt.Color(51, 153, 255));
+        btn_appointment.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_appointment.setText("Quản lý lịch hẹn");
+        btn_appointment.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_appointmentActionPerformed(evt);
+            }
+        });
+
+        btn_patient.setBackground(new java.awt.Color(51, 153, 255));
+        btn_patient.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_patient.setText("Quản lý bệnh nhân");
+        btn_patient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_patientActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btn_medicine, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_appointment, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_patient, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)))
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGap(103, 103, 103)
+                .addComponent(btn_patient, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_medicine, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_appointment, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(114, Short.MAX_VALUE))
+        );
+
         getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 410));
 
         jPanel3.setBackground(new java.awt.Color(255, 255, 255));
@@ -173,6 +208,24 @@ public class doctor extends javax.swing.JFrame {
             new login().setVisible(true);
         }
     }//GEN-LAST:event_btn_logoutActionPerformed
+
+    private void btn_patientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_patientActionPerformed
+        PatientView addForm = new PatientView(this, userCode, userCode);
+        addForm.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_btn_patientActionPerformed
+
+    private void btn_medicineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_medicineActionPerformed
+        CreateMedicinesView addForm = new CreateMedicinesView(this, userCode, userCode);
+        addForm.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_btn_medicineActionPerformed
+
+    private void btn_appointmentActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_appointmentActionPerformed
+        AppointmentView addForm = new AppointmentView(this, userCode, userCode);
+        addForm.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_btn_appointmentActionPerformed
 
     /**
      * @param args the command line arguments
@@ -239,11 +292,11 @@ public class doctor extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btn_appointment;
     private javax.swing.JButton btn_logout;
+    private javax.swing.JButton btn_medicine;
+    private javax.swing.JButton btn_patient;
     private javax.swing.JTable display_lichhen;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;

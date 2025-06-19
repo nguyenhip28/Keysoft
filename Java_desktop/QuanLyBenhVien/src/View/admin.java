@@ -110,7 +110,7 @@ public class admin extends javax.swing.JFrame {
                 btn_logoutActionPerformed(evt);
             }
         });
-        getContentPane().add(btn_logout, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 330, 180, 60));
+        getContentPane().add(btn_logout, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 330, 170, 60));
 
         btn_patient.setBackground(new java.awt.Color(0, 153, 255));
         btn_patient.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -120,7 +120,7 @@ public class admin extends javax.swing.JFrame {
                 btn_patientActionPerformed(evt);
             }
         });
-        getContentPane().add(btn_patient, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 90, 180, 60));
+        getContentPane().add(btn_patient, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 90, 170, 60));
 
         btn_medicine.setBackground(new java.awt.Color(51, 153, 255));
         btn_medicine.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -130,7 +130,7 @@ public class admin extends javax.swing.JFrame {
                 btn_medicineActionPerformed(evt);
             }
         });
-        getContentPane().add(btn_medicine, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 180, 60));
+        getContentPane().add(btn_medicine, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 170, 60));
 
         btn_appointment.setBackground(new java.awt.Color(51, 153, 255));
         btn_appointment.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -140,8 +140,9 @@ public class admin extends javax.swing.JFrame {
                 btn_appointmentActionPerformed(evt);
             }
         });
-        getContentPane().add(btn_appointment, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 210, 180, 60));
+        getContentPane().add(btn_appointment, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 210, 170, 60));
 
+        display_lichhen.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         display_lichhen.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
@@ -165,7 +166,7 @@ public class admin extends javax.swing.JFrame {
                 btn_mng_thuocActionPerformed(evt);
             }
         });
-        getContentPane().add(btn_mng_thuoc, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 180, 60));
+        getContentPane().add(btn_mng_thuoc, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 270, 170, 60));
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
@@ -173,10 +174,10 @@ public class admin extends javax.swing.JFrame {
         jLabel4.setText("Lịch hẹn ");
         jPanel1.add(jLabel4);
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 0, 640, 400));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 0, 650, 400));
 
         jPanel2.setBackground(new java.awt.Color(102, 204, 255));
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 180, 400));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 170, 400));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

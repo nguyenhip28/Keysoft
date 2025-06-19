@@ -26,7 +26,7 @@ public class AddPatientView extends javax.swing.JFrame {
         String newCode = "BN-001";
         try (Connection conn = DatabaseConnection.getJDBConnection(); Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery("SELECT patient_code FROM patients ORDER BY patient_id DESC LIMIT 1")) {
             if (rs.next()) {
-                String lastCode = rs.getString("patient_code"); 
+                String lastCode = rs.getString("patient_code");
                 int num = Integer.parseInt(lastCode.split("-")[1]) + 1;
                 newCode = String.format("BN-%03d", num);
             }
@@ -49,6 +49,7 @@ public class AddPatientView extends javax.swing.JFrame {
         initComponents();
         lb_benhnhan_code.setText(generateNewPatientCode());
         lb_benhnhan_code.setEditable(false);
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -124,8 +125,8 @@ public class AddPatientView extends javax.swing.JFrame {
         });
 
         btn_back.setBackground(new java.awt.Color(0, 153, 255));
-        btn_back.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_back.setText("Back");
+        btn_back.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btn_back.setText("<");
         btn_back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_backActionPerformed(evt);
@@ -176,18 +177,17 @@ public class AddPatientView extends javax.swing.JFrame {
                         .addGap(36, 36, 36)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(lb_address)
+                            .addComponent(lb_email)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(cb_gender, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel6)
-                                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGap(0, 86, Short.MAX_VALUE))
-                            .addComponent(lb_email)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel5)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -197,9 +197,9 @@ public class AddPatientView extends javax.swing.JFrame {
                             .addComponent(lb_benhnhan_code, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1)
-                                .addGap(31, 31, 31)
-                                .addComponent(btn_back, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                                .addGap(56, 56, 56)
+                                .addComponent(btn_back, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 13, Short.MAX_VALUE)))
                 .addGap(21, 21, 21))
             .addGroup(layout.createSequentialGroup()
                 .addGap(177, 177, 177)
@@ -257,7 +257,7 @@ public class AddPatientView extends javax.swing.JFrame {
                     .addComponent(lb_email, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(39, 39, 39)
                 .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap(20, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(135, 135, 135)

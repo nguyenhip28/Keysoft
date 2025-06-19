@@ -2,6 +2,7 @@ package Controller;
 
 import Model.AppointmentModel;
 import DBConnect.DatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,7 +26,8 @@ public class DoctorController {
 
         try (Connection conn = DatabaseConnection.getJDBConnection()) {
             String query = """
-                SELECT a.patient_code, p.full_name, a.appointment_date, a.appointment_time, a.symptoms
+                SELECT a.appointment_id, a.patient_code, p.full_name, 
+                       a.appointment_date, a.appointment_time, a.symptoms
                 FROM appointments a
                 JOIN patients p ON a.patient_code = p.patient_code
                 ORDER BY a.appointment_date DESC, a.appointment_time DESC
@@ -38,13 +40,15 @@ public class DoctorController {
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-                        appointments.add(new AppointmentModel(
-                                rs.getString("patient_code"),
-                                rs.getString("full_name"),
-                                rs.getDate("appointment_date").toLocalDate(),
-                                rs.getTime("appointment_time").toLocalTime(),
-                                rs.getString("symptoms")
-                        ));
+                        int appointmentId = rs.getInt("appointment_id");
+                        String patientCode = rs.getString("patient_code");
+                        String fullName = rs.getString("full_name");
+                        LocalDate date = rs.getDate("appointment_date").toLocalDate();
+                        LocalTime time = rs.getTime("appointment_time").toLocalTime();
+                        String symptoms = rs.getString("symptoms");
+
+                        AppointmentModel model = new AppointmentModel(appointmentId, patientCode, fullName, date, time, symptoms);
+                        appointments.add(model);
                     }
                 }
             }
