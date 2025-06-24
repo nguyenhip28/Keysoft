@@ -1,6 +1,8 @@
-package view;
+package view.adminsite;
 
+import view.adminsite.adminView;
 import javax.swing.JOptionPane;
+import view.loginView;
 
 /**
  *
@@ -224,7 +226,6 @@ public class memberView extends javax.swing.JFrame {
                                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(jPanel2Layout.createSequentialGroup()
                                         .addComponent(jLabel3)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(jPanel2Layout.createSequentialGroup()
                                                 .addGap(63, 63, 63)

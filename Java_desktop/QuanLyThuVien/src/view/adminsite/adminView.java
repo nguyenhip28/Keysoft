@@ -1,6 +1,7 @@
-package view;
+package view.adminsite;
 
 import javax.swing.JOptionPane;
+import view.loginView;
 
 /**
  *
