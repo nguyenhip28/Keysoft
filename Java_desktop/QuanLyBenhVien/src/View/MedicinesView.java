@@ -379,18 +379,27 @@ public class MedicinesView extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_addActionPerformed
 
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
-        String name = lb_thuoc_name.getText().trim();
-        if (name.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập tên thuốc để xoá.");
+        int selectedRow = display_thuoc.getSelectedRow(); // table là JTable chứa danh sách thuốc
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một dòng thuốc để xoá.");
             return;
         }
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn xoá thuốc này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
+        // Lấy tên thuốc từ dòng được chọn, giả sử tên thuốc nằm ở cột 0
+        String medicineName = display_thuoc.getValueAt(selectedRow, 0).toString();
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "Bạn có chắc chắn muốn xoá thuốc \"" + medicineName + "\"?",
+                "Xác nhận xoá", JOptionPane.YES_NO_OPTION);
+
         if (confirm == JOptionPane.YES_OPTION) {
             try {
-                boolean deleted = controller.deleteMedicine(name);
+                boolean deleted = controller.deleteMedicine(medicineName);
                 if (deleted) {
                     JOptionPane.showMessageDialog(this, "Đã xoá thuốc.");
+
+                    // Tải lại bảng và các thông tin khác
                     loadTotalRecords();
                     loadMedicinesData(currentPage);
 

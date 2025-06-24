@@ -1,6 +1,7 @@
 package View;
 
 import DBConnect.DatabaseConnection;
+import Model.PatientModel;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -11,6 +12,8 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import View.PatientView;
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -18,7 +21,7 @@ import View.PatientView;
  */
 public class AddPatientView extends javax.swing.JFrame {
 
-    private javax.swing.JFrame parent;
+    private PatientView parent;
     private String userCode;
     private String userRole;
 
@@ -42,7 +45,7 @@ public class AddPatientView extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
-    public AddPatientView(javax.swing.JFrame parent, String userCode, String userRole) {
+    public AddPatientView(PatientView parent, String userCode, String userRole) {
         this.parent = parent;
         this.userCode = userCode;
         this.userRole = userRole;
@@ -272,6 +275,12 @@ public class AddPatientView extends javax.swing.JFrame {
         String code = lb_benhnhan_code.getText();
         String name = lb_fullname.getText();
         java.util.Date utilDate = jDateChooser1.getDate();
+
+        if (utilDate == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn ngày sinh.");
+            return;
+        }
+
         java.sql.Date dob = new java.sql.Date(utilDate.getTime());
         String gender = cb_gender.getSelectedItem().toString();
         String address = lb_address.getText();
@@ -288,9 +297,17 @@ public class AddPatientView extends javax.swing.JFrame {
             pstmt.setString(5, address);
             pstmt.setString(6, phone);
             pstmt.setString(7, email);
+
             int rows = pstmt.executeUpdate();
             if (rows > 0) {
                 JOptionPane.showMessageDialog(this, "Thêm bệnh nhân thành công!");
+
+                if (parent != null) {
+                    parent.reloadCurrentPage();      // Cập nhật lại bảng
+                    parent.setVisible(true);         // Mở lại form chính
+                }
+
+                this.dispose();                      // Đóng form thêm
             } else {
                 JOptionPane.showMessageDialog(this, "Không thể thêm bệnh nhân.");
             }

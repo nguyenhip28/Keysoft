@@ -32,7 +32,7 @@ public class PatientView extends javax.swing.JFrame {
     }
 
     public void reloadCurrentPage() {
-        loadPatients(currentPage);  // hoặc loadPatients(1) nếu muốn luôn về trang đầu
+        loadPatients(currentPage);  
     }
 
     private void loadTotalPatients() {

@@ -5,6 +5,8 @@ import Model.AppointmentModel;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
@@ -158,18 +160,18 @@ public class AppointmentView extends javax.swing.JFrame {
             }
         });
 
+        btn_add_thuoc.setText("Kê đơn");
         btn_add_thuoc.setBackground(new java.awt.Color(0, 153, 255));
         btn_add_thuoc.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        btn_add_thuoc.setText("Kê đơn");
         btn_add_thuoc.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_add_thuocActionPerformed(evt);
             }
         });
 
+        jButton1.setText("<");
         jButton1.setBackground(new java.awt.Color(51, 153, 255));
         jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jButton1.setText("<");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jButton1ActionPerformed(evt);
@@ -183,16 +185,16 @@ public class AppointmentView extends javax.swing.JFrame {
             }
         });
 
-        btn_back.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btn_back.setText("<");
+        btn_back.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btn_back.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_backActionPerformed(evt);
             }
         });
 
-        btn_next.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btn_next.setText(">");
+        btn_next.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btn_next.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_nextActionPerformed(evt);
@@ -346,28 +348,45 @@ public class AppointmentView extends javax.swing.JFrame {
 
     private void btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_deleteActionPerformed
         int selectedRow = display_lichhen1.getSelectedRow();
+
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn lịch hẹn cần hủy.");
             return;
         }
 
-        String patientCode = display_lichhen1.getValueAt(selectedRow, 0).toString();
-        LocalDate date = LocalDate.parse(display_lichhen1.getValueAt(selectedRow, 1).toString());
-        LocalTime time = LocalTime.parse(display_lichhen1.getValueAt(selectedRow, 2).toString());
+        try {
+            // Sửa lại chỉ số cột cho đúng với cấu trúc JTable của bạn
+            String patientCode = display_lichhen1.getValueAt(selectedRow, 1).toString().trim();
+            String dateStr = display_lichhen1.getValueAt(selectedRow, 2).toString().trim();
+            String timeStr = display_lichhen1.getValueAt(selectedRow, 3).toString().trim();
 
-        int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc muốn hủy lịch hẹn này?", "Xác nhận", JOptionPane.YES_NO_OPTION);
-        if (confirm == JOptionPane.YES_OPTION) {
-            try {
+            // Nếu định dạng ngày/giờ là dd/MM/yyyy hoặc HH:mm:ss thì phải dùng DateTimeFormatter
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); // hoặc "dd/MM/yyyy"
+            DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");      // hoặc "HH:mm:ss"
+
+            LocalDate date = LocalDate.parse(dateStr, dateFormatter);
+            LocalTime time = LocalTime.parse(timeStr, timeFormatter);
+
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "Bạn có chắc muốn hủy lịch hẹn này?",
+                    "Xác nhận hủy",
+                    JOptionPane.YES_NO_OPTION
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
                 boolean success = controller.deleteAppointment(patientCode, date, time);
+
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Hủy lịch thành công!");
                     loadAppointmentsByPage(currentPage);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Không thể hủy lịch. Có thể lịch đã bị xóa trước đó.");
+                    JOptionPane.showMessageDialog(this, "Không thể hủy lịch. Lịch hẹn có thể đã bị xóa.");
                 }
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Lỗi khi hủy lịch: " + e.getMessage());
             }
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this, "Định dạng ngày hoặc giờ không hợp lệ: " + e.getMessage());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Lỗi khi hủy lịch: " + e.getMessage());
         }
     }//GEN-LAST:event_btn_deleteActionPerformed
 
@@ -378,14 +397,14 @@ public class AppointmentView extends javax.swing.JFrame {
 
             try {
                 // Lấy dữ liệu đúng thứ tự cột
-                int appointmentId = Integer.parseInt(model.getValueAt(selectedRow, 0).toString()); // ID
-                String patientCode = model.getValueAt(selectedRow, 1).toString();                  // BN-xxx
-                LocalDate date = LocalDate.parse(model.getValueAt(selectedRow, 2).toString());     // Ngày hẹn
-                LocalTime time = LocalTime.parse(model.getValueAt(selectedRow, 3).toString());     // Giờ hẹn
-                String symptoms = model.getValueAt(selectedRow, 4).toString();                     // Triệu chứng
+                int appointmentId = Integer.parseInt(model.getValueAt(selectedRow, 0).toString());
+                String patientCode = model.getValueAt(selectedRow, 1).toString();
+                LocalDate date = LocalDate.parse(model.getValueAt(selectedRow, 2).toString());
+                LocalTime time = LocalTime.parse(model.getValueAt(selectedRow, 3).toString());
+                String symptoms = model.getValueAt(selectedRow, 4).toString();
 
-                // Nếu không hiển thị fullName, để trống hoặc lấy từ DB
-                String fullName = ""; // Gợi ý: lấy từ patient_code nếu cần
+
+                String fullName = "";
 
                 // Tạo AppointmentModel
                 AppointmentModel selectedAppointment = new AppointmentModel(
@@ -407,9 +426,8 @@ public class AppointmentView extends javax.swing.JFrame {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         this.dispose(); // Close the current add_benhnhan window
         if (parent != null) {
-            parent.setVisible(true); // Show the parent window (benhnhan_manage)
+            parent.setVisible(true); 
         } else {
-            // Fallback: Open a new benhnhan_manage window with userCode and userRole
             new PatientView(null, userCode, userRole).setVisible(true);
         }
     }//GEN-LAST:event_jButton1ActionPerformed

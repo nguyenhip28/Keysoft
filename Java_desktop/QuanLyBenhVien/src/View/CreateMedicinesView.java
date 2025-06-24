@@ -130,7 +130,6 @@ public class CreateMedicinesView extends javax.swing.JFrame {
         jButton1.setText("<");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setMaximumSize(null);
         setSize(new java.awt.Dimension(760, 646));
         getContentPane().add(jLabel6, java.awt.BorderLayout.CENTER);
 
@@ -364,61 +363,6 @@ public class CreateMedicinesView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_doneActionPerformed
 
-    @SuppressWarnings("unchecked")
-    private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
-        String patientCodeInput = lb_benhnhan_code.getText().trim();
-
-        if (patientCodeInput.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã bệnh nhân.");
-            return;
-        }
-
-        try {
-            PrescriptionController controller = new PrescriptionController();
-            Map<String, Object> data = controller.getLatestPrescriptionByPatientCode(patientCodeInput);
-
-            if (data.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy đơn thuốc cho bệnh nhân này.");
-                return;
-            }
-
-            currentPatientCode = patientCodeInput;
-            dsThuoc.clear();
-
-            String notes = (String) data.get("notes");
-            double total = (double) data.get("total_amount");
-            List<Map<String, String>> thuocList = (List<Map<String, String>>) data.get("medicines");
-
-            lb_notes.setText(notes != null ? notes : "");
-            lb_total.setText(String.format("%.2f", total));
-            totalAmount = total;
-
-            DefaultTableModel model = (DefaultTableModel) display_don_thuoc.getModel();
-            model.setRowCount(0);
-
-            for (Map<String, String> thuoc : thuocList) {
-                dsThuoc.add(thuoc);
-
-                double donGia = Double.parseDouble(thuoc.get("price"));
-                int soLuong = Integer.parseInt(thuoc.get("quantity"));
-                double thanhTien = donGia * soLuong;
-
-                model.addRow(new Object[]{
-                    thuoc.get("medicine_name"),
-                    thuoc.get("dosage"),
-                    thuoc.get("unit"),
-                    donGia,
-                    soLuong,
-                    thanhTien
-                });
-            }
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Lỗi khi tìm đơn thuốc: " + ex.getMessage());
-        }
-    }//GEN-LAST:event_btn_searchActionPerformed
-
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
         currentPatientCode = lb_benhnhan_code.getText().trim();
 
@@ -489,6 +433,61 @@ public class CreateMedicinesView extends javax.swing.JFrame {
             new PatientView(null, userCode, userRole).setVisible(true);
         }
     }//GEN-LAST:event_btn_backActionPerformed
+
+    @SuppressWarnings("unchecked")
+    private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
+        String patientCodeInput = lb_benhnhan_code.getText().trim();
+
+        if (patientCodeInput.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập mã bệnh nhân.");
+            return;
+        }
+
+        try {
+            PrescriptionController controller = new PrescriptionController();
+            Map<String, Object> data = controller.getLatestPrescriptionByPatientCode(patientCodeInput);
+
+            if (data.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy đơn thuốc cho bệnh nhân này.");
+                return;
+            }
+
+            currentPatientCode = patientCodeInput;
+            dsThuoc.clear();
+
+            String notes = (String) data.get("notes");
+            double total = (double) data.get("total_amount");
+            List<Map<String, String>> thuocList = (List<Map<String, String>>) data.get("medicines");
+
+            lb_notes.setText(notes != null ? notes : "");
+            lb_total.setText(String.format("%.2f", total));
+            totalAmount = total;
+
+            DefaultTableModel model = (DefaultTableModel) display_don_thuoc.getModel();
+            model.setRowCount(0);
+
+            for (Map<String, String> thuoc : thuocList) {
+                dsThuoc.add(thuoc);
+
+                double donGia = Double.parseDouble(thuoc.get("price"));
+                int soLuong = Integer.parseInt(thuoc.get("quantity"));
+                double thanhTien = donGia * soLuong;
+
+                model.addRow(new Object[]{
+                    thuoc.get("medicine_name"),
+                    thuoc.get("dosage"),
+                    thuoc.get("unit"),
+                    donGia,
+                    soLuong,
+                    thanhTien
+                });
+            }
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Lỗi khi tìm đơn thuốc: " + ex.getMessage());
+        }
+    }//GEN-LAST:event_btn_searchActionPerformed
 
     /**
      * @param args the command line arguments
