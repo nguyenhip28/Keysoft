@@ -4,28 +4,22 @@ public class memberModel {
 
     private int memberId;
     private String memberCode;
-    private String fullName;
-    private String gender;
-    private int age;
-    private String address;
-    private String phone;
+    private int userId;
 
-    // Constructor
-    public memberModel(int memberId, String memberCode, String fullName, String gender, int age, String address, String phone) {
+    // Constructor đầy đủ (dùng khi lấy dữ liệu từ DB)
+    public memberModel(int memberId, String memberCode, int userId) {
         this.memberId = memberId;
         this.memberCode = memberCode;
-        this.fullName = fullName;
-        this.gender = gender;
-        this.age = age;
-        this.address = address;
-        this.phone = phone;
+        this.userId = userId;
     }
 
-    public memberModel(String memberCode, String fullName, String gender, int age, String address, String phone) {
-        this(0, memberCode, fullName, gender, age, address, phone);
+    // Constructor tạo mới (chỉ cần memberCode và userId)
+    public memberModel(String memberCode, int userId) {
+        this.memberCode = memberCode;
+        this.userId = userId;
     }
 
-    // Getters and Setters
+    // Getters & Setters
     public int getMemberId() {
         return memberId;
     }
@@ -42,43 +36,11 @@ public class memberModel {
         this.memberCode = memberCode;
     }
 
-    public String getFullName() {
-        return fullName;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

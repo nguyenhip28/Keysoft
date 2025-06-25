@@ -171,6 +171,7 @@ public class loginView extends javax.swing.JFrame {
         userModel user = controller.login(username, password);
 
         if (user != null) {
+            String userCode = user.getUserCode();  // ✅ Lấy userCode
             int roleId = controller.getRoleIdByUsername(username);
 
             if (roleId == 1) {
@@ -178,7 +179,7 @@ public class loginView extends javax.swing.JFrame {
                 new adminView().setVisible(true);
             } else if (roleId == 2) {
                 JOptionPane.showMessageDialog(this, "Xin chào khách hàng!");
-                new userView().setVisible(true);
+                new userView(userCode).setVisible(true);  
             } else {
                 JOptionPane.showMessageDialog(this, "Không xác định được vai trò người dùng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;

@@ -1,7 +1,14 @@
 package view.adminsite;
 
+import Controller.memberController;
+import Controller.userController;
+import java.util.List;
+import javax.swing.JLabel;
 import view.adminsite.adminView;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import model.memberModel;
 import view.loginView;
 
 /**
@@ -16,6 +23,33 @@ public class memberView extends javax.swing.JFrame {
     public memberView() {
         initComponents();
         setLocationRelativeTo(null);
+        loadMemberList();
+    }
+
+    private void loadMemberList() {
+        memberController controller = new memberController();
+        List<memberModel> list = controller.getAllMembers();
+
+        DefaultTableModel model = (DefaultTableModel) display_member.getModel();
+        model.setRowCount(0);
+
+        int stt = 1;
+        for (memberModel member : list) {
+            userController uController = new userController();
+            String fullName = uController.getUserNameById(member.getUserId());
+            String gender = uController.getUserGenderById(member.getUserId());
+            String phone = uController.getUserPhoneById(member.getUserId());
+            String email = uController.getUserEmailById(member.getUserId());
+
+            model.addRow(new Object[]{stt++, fullName, gender, phone, email});
+        }
+
+        // Căn giữa chữ trong bảng
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        for (int i = 0; i < model.getColumnCount(); i++) {
+            display_member.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        }
     }
 
     /**
@@ -148,6 +182,7 @@ public class memberView extends javax.swing.JFrame {
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/reader-1713700-1453871.png"))); // NOI18N
         jLabel3.setText("Quản lý hội viên");
 
+        display_member.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         display_member.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -189,6 +224,11 @@ public class memberView extends javax.swing.JFrame {
         btn_addMem.setBackground(new java.awt.Color(0, 153, 255));
         btn_addMem.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         btn_addMem.setText("Thêm hội viên");
+        btn_addMem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_addMemActionPerformed(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel5.setText("Thêm khách hàng mới ");
@@ -312,13 +352,39 @@ public class memberView extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_logoutActionPerformed
 
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
-        // TODO add your handling code here:
+        String keyword = lbl_searchmem.getText().trim();
+        if (keyword.isEmpty()) {
+            loadMemberList(); // Nếu rỗng thì hiển thị toàn bộ
+            return;
+        }
+
+        memberController controller = new memberController();
+        List<memberModel> list = controller.searchMembersByNameOrPhone(keyword);
+
+        DefaultTableModel model = (DefaultTableModel) display_member.getModel();
+        model.setRowCount(0);
+
+        int stt = 1;
+        for (memberModel member : list) {
+            userController uController = new userController();
+            String fullName = uController.getUserNameById(member.getUserId());
+            String gender = uController.getUserGenderById(member.getUserId());
+            String phone = uController.getUserPhoneById(member.getUserId());
+            String email = uController.getUserEmailById(member.getUserId());
+
+            model.addRow(new Object[]{stt++, fullName, gender, phone, email});
+        }
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_menuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_menuActionPerformed
         new adminView().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btn_menuActionPerformed
+
+    private void btn_addMemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addMemActionPerformed
+        new addmemberView().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btn_addMemActionPerformed
 
     /**
      * @param args the command line arguments

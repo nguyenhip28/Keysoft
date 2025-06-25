@@ -1,9 +1,13 @@
 package view.adminsite;
 
 import Controller.memberController;
+import Controller.userController;
+import Model.userModel;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import model.memberModel;
 
@@ -11,36 +15,50 @@ import model.memberModel;
  *
  * @author Vu Nguyen
  */
-public class addmember extends javax.swing.JFrame {
+public class addmemberView extends javax.swing.JFrame {
 
     /**
      * Creates new form addmember
      */
-    private List<memberModel> allMembers = new ArrayList<>();
-    private final memberController controller = new memberController();
+    private final memberController memberController = new memberController();
+    private final userController userController = new userController();
+    private List<userModel> allUsers = new ArrayList<>();
     private int currentPage = 1;
     private int itemsPerPage = 10;
 
-    public addmember() {
+    public addmemberView() {
         initComponents();
+        loadAllUsers();
+        setLocationRelativeTo(null);
     }
 
-    private void displayMemberTable(List<memberModel> members, int page) {
-        DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+    private void loadAllUsers() {
+        allUsers = memberController.getUsersNotInMembers();
+        currentPage = 1;
+        displayUserTable(allUsers, currentPage);
+    }
+
+    private void displayUserTable(List<userModel> users, int page) {
+        DefaultTableModel model = (DefaultTableModel) display_user.getModel();
         model.setRowCount(0); // Xóa dữ liệu cũ
 
         int start = (page - 1) * itemsPerPage;
-        int end = Math.min(start + itemsPerPage, members.size());
+        int end = Math.min(start + itemsPerPage, users.size());
 
         for (int i = start; i < end; i++) {
-            memberModel m = members.get(i);
+            userModel u = users.get(i);
             model.addRow(new Object[]{
                 i + 1,
-                m.getFullName(),
-                m.getGender(),
-                m.getAddress(),
-                m.getPhone()
+                u.getFullName(),
+                u.getGender(),
+                u.getAddress(),
+                u.getPhone()
             });
+        }
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        for (int i = 0; i < display_user.getColumnCount(); i++) {
+            display_user.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
 
@@ -57,7 +75,7 @@ public class addmember extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        display_user = new javax.swing.JTable();
         lbl_user = new javax.swing.JTextField();
         lbl_thêm = new javax.swing.JLabel();
         btn_search = new javax.swing.JButton();
@@ -67,6 +85,7 @@ public class addmember extends javax.swing.JFrame {
         btn_back = new javax.swing.JButton();
         btn_next = new javax.swing.JButton();
         btn_last = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         btn_search1.setBackground(new java.awt.Color(0, 153, 255));
         btn_search1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -79,7 +98,8 @@ public class addmember extends javax.swing.JFrame {
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/ddd.png"))); // NOI18N
         jLabel1.setText("Thêm hội viên mới");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        display_user.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        display_user.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -90,14 +110,14 @@ public class addmember extends javax.swing.JFrame {
                 "STT", "Họ và tên", "Giới tính", "Địa chỉ", "SĐT"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
-        if (jTable1.getColumnModel().getColumnCount() > 0) {
-            jTable1.getColumnModel().getColumn(0).setMinWidth(40);
-            jTable1.getColumnModel().getColumn(0).setPreferredWidth(40);
-            jTable1.getColumnModel().getColumn(0).setMaxWidth(40);
-            jTable1.getColumnModel().getColumn(2).setMinWidth(100);
-            jTable1.getColumnModel().getColumn(2).setPreferredWidth(100);
-            jTable1.getColumnModel().getColumn(2).setMaxWidth(100);
+        jScrollPane1.setViewportView(display_user);
+        if (display_user.getColumnModel().getColumnCount() > 0) {
+            display_user.getColumnModel().getColumn(0).setMinWidth(40);
+            display_user.getColumnModel().getColumn(0).setPreferredWidth(40);
+            display_user.getColumnModel().getColumn(0).setMaxWidth(40);
+            display_user.getColumnModel().getColumn(2).setMinWidth(100);
+            display_user.getColumnModel().getColumn(2).setPreferredWidth(100);
+            display_user.getColumnModel().getColumn(2).setMaxWidth(100);
         }
 
         lbl_thêm.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
@@ -152,6 +172,15 @@ public class addmember extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setBackground(new java.awt.Color(0, 153, 255));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jButton1.setText("<");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -177,101 +206,132 @@ public class addmember extends javax.swing.JFrame {
                         .addGap(29, 29, 29)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 261, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(118, 118, 118)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lbl_thêm, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(lbl_user, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(btn_search, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)))))
-                .addContainerGap(14, Short.MAX_VALUE))
+                                .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 115, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(lbl_thêm, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(25, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(22, 22, 22)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(lbl_thêm)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGap(22, 22, 22)
+                        .addComponent(jLabel1))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(22, 22, 22)
+                                .addComponent(lbl_thêm)
+                                .addGap(15, 15, 15))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jButton1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(lbl_user, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btn_search, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jLabel1))
+                            .addComponent(btn_add, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 319, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_last)
                     .addComponent(btn_next)
                     .addComponent(btn_back)
-                    .addComponent(btn_first)))
+                    .addComponent(btn_first))
+                .addContainerGap())
         );
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 480));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 500));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         String keyword = lbl_user.getText().trim();
-        allMembers = controller.searchMembers(keyword);
-        currentPage = 1;
-        displayMemberTable(allMembers, currentPage);
+        if (!keyword.isEmpty()) {
+            List<userModel> result = memberController.searchUsersNotInMembers(keyword);
+            if (!result.isEmpty()) {
+                allUsers = result;
+                currentPage = 1;
+                displayUserTable(allUsers, currentPage);
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng.");
+            }
+        } else {
+            // Nếu không nhập gì -> load lại toàn bộ
+            loadAllUsers();
+        }
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addActionPerformed
+        int selectedRow = display_user.getSelectedRow();
+        if (selectedRow >= 0) {
+            int actualIndex = (currentPage - 1) * itemsPerPage + selectedRow;
+            userModel selectedUser = allUsers.get(actualIndex); // ✅ Sửa ở đây
 
-        memberModel newMember = new memberModel(
-                "MB-" + System.currentTimeMillis(), // member_code random
-                "Nguyễn Văn A",
-                "Nam",
-                22,
-                "Hà Nội",
-                "0123456789"
-        );
+            userController uController = new userController();
+            int userId = uController.getUserIdByUserCode(selectedUser.getUserCode()); // dùng userCode để lấy userId
 
-        boolean success = controller.addMember(newMember);
-        if (success) {
-            JOptionPane.showMessageDialog(this, "Thêm hội viên thành công!");
-            allMembers = controller.getAllMembers();
-            currentPage = 1;
-            displayMemberTable(allMembers, currentPage);
+            if (userId != -1) {
+                String memberCode = "MB-" + selectedUser.getUserCode();
+                memberModel newMember = new memberModel(memberCode, userId);
+
+                if (memberController.addMember(newMember)) {
+                    JOptionPane.showMessageDialog(this, "Đã thêm hội viên!");
+                    btn_searchActionPerformed(null);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Thêm thất bại, có thể user đã là hội viên.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(this, "Không tìm thấy userId từ userCode.");
+            }
         } else {
-            JOptionPane.showMessageDialog(this, "Thêm thất bại!");
+            JOptionPane.showMessageDialog(this, "Chọn một dòng trong bảng trước khi thêm!");
         }
     }//GEN-LAST:event_btn_addActionPerformed
 
     private void btn_firstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_firstActionPerformed
         currentPage = 1;
-        displayMemberTable(allMembers, currentPage);
+        displayUserTable(allUsers, currentPage);
     }//GEN-LAST:event_btn_firstActionPerformed
 
     private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
         if (currentPage > 1) {
             currentPage--;
-            displayMemberTable(allMembers, currentPage);
+            displayUserTable(allUsers, currentPage);
         }
     }//GEN-LAST:event_btn_backActionPerformed
 
     private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
-        int totalPage = (int) Math.ceil((double) allMembers.size() / itemsPerPage);
+        int totalPage = (int) Math.ceil((double) allUsers.size() / itemsPerPage);
         if (currentPage < totalPage) {
             currentPage++;
-            displayMemberTable(allMembers, currentPage);
+            displayUserTable(allUsers, currentPage);
         }
     }//GEN-LAST:event_btn_nextActionPerformed
 
     private void btn_lastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_lastActionPerformed
-        int totalPage = (int) Math.ceil((double) allMembers.size() / itemsPerPage);
+        int totalPage = (int) Math.ceil((double) allUsers.size() / itemsPerPage);
         currentPage = totalPage;
-        displayMemberTable(allMembers, currentPage);
+        displayUserTable(allUsers, currentPage);
     }//GEN-LAST:event_btn_lastActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        new memberView().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -290,20 +350,21 @@ public class addmember extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(addmember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(addmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(addmember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(addmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(addmember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(addmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(addmember.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(addmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new addmember().setVisible(true);
+                new addmemberView().setVisible(true);
             }
         });
     }
@@ -316,11 +377,12 @@ public class addmember extends javax.swing.JFrame {
     private javax.swing.JButton btn_next;
     private javax.swing.JButton btn_search;
     private javax.swing.JButton btn_search1;
+    private javax.swing.JTable display_user;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lbl_thêm;
     private javax.swing.JTextField lbl_user;
     // End of variables declaration//GEN-END:variables

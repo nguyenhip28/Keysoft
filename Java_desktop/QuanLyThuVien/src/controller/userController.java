@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class userController {
 
@@ -112,7 +114,7 @@ public class userController {
     }
 
     public userModel login(String username, String password) {
-        String hashedPassword = hashPassword(password); 
+        String hashedPassword = hashPassword(password);
 
         try (Connection conn = DBConnect.getJDBConnection()) {
             String sql = "SELECT * FROM users WHERE username = ? AND password_hash = ?";
@@ -160,6 +162,166 @@ public class userController {
             e.printStackTrace();
         }
 
-        return -1; 
+        return -1;
+    }
+
+    public List<userModel> searchUsersNotInMembers(String keyword) {
+        List<userModel> users = new ArrayList<>();
+
+        String sql = "SELECT * FROM users u "
+                + "WHERE u.full_name LIKE ? "
+                + "AND u.user_id NOT IN (SELECT user_id FROM members)";
+
+        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + keyword + "%");
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                userModel u = new userModel(
+                        rs.getString("user_code"),
+                        rs.getString("full_name"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getInt("age"),
+                        rs.getString("gender"),
+                        rs.getString("address"),
+                        rs.getString("phone"),
+                        rs.getString("password_hash")
+                );
+                users.add(u);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+
+    public int getUserIdByUserCode(String userCode) {
+        String sql = "SELECT user_id FROM users WHERE user_code = ?";
+        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userCode);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("user_id");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    public String getUserNameById(int userId) {
+        String sql = "SELECT full_name FROM users WHERE user_id = ?";
+        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("full_name");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String getUserGenderById(int userId) {
+        String sql = "SELECT gender FROM users WHERE user_id = ?";
+        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("gender");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String getUserPhoneById(int userId) {
+        String sql = "SELECT phone FROM users WHERE user_id = ?";
+        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("phone");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String getUserEmailById(int userId) {
+        String sql = "SELECT email FROM users WHERE user_id = ?";
+        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, userId);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getString("email");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public userModel getUserByCode(String userCode) {
+        userModel user = null;
+
+        try (Connection conn = DBConnect.getJDBConnection()) {
+            String sql = "SELECT * FROM users WHERE user_code = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, userCode);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                user = new userModel(
+                        rs.getString("user_code"),
+                        rs.getString("full_name"),
+                        rs.getString("username"),
+                        rs.getString("email"),
+                        rs.getInt("age"),
+                        rs.getString("gender"),
+                        rs.getString("address"),
+                        rs.getString("phone"),
+                        rs.getString("password_hash")
+                );
+            }
+
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return user;
+    }
+
+    public boolean updateUserInfo(userModel user) {
+        String sql = "UPDATE users SET full_name = ?, age = ?, gender = ?, email = ?, address = ?, phone = ? WHERE user_code = ?";
+
+        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, user.getFullName());
+            ps.setInt(2, user.getAge());
+            ps.setString(3, user.getGender());
+            ps.setString(4, user.getEmail());
+            ps.setString(5, user.getAddress());
+            ps.setString(6, user.getPhone());
+            ps.setString(7, user.getUserCode());
+
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
