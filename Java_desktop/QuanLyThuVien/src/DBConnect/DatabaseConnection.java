@@ -1,4 +1,4 @@
-package DatabaseConnection;
+package DBConnect;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +11,7 @@ import java.util.logging.Logger;
  *
  * @author Vu Nguyen
  */
-public class DBConnect {
+public class DatabaseConnection {
         public static Connection getJDBConnection() {
 
         String url = "jdbc:mysql://localhost:3306/quanlythuvien?useSSL=false&serverTimezone=UTC";
@@ -24,10 +24,10 @@ public class DBConnect {
             try {
                 return DriverManager.getConnection(url, user, password);
             } catch (SQLException ex) {
-                Logger.getLogger(DBConnect.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(DatabaseConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(DBConnect.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DatabaseConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
 

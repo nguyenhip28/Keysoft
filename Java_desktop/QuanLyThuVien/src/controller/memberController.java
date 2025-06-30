@@ -1,18 +1,18 @@
 package Controller;
 
-import model.memberModel;
-import DatabaseConnection.DBConnect;
-import Model.userModel;
+import model.MemberModel;
+import DBConnect.DatabaseConnection;
+import Model.UserModel;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class memberController {
+public class MemberController {
 
     // Lấy tất cả member (loại bỏ admin)
-    public List<memberModel> getAllMembers() {
-        List<memberModel> list = new ArrayList<>();
+    public List<MemberModel> getAllMembers() {
+        List<MemberModel> list = new ArrayList<>();
         String sql = """
             SELECT m.member_id, m.member_code, m.user_id
             FROM members m
@@ -21,9 +21,9 @@ public class memberController {
             WHERE ur.role_id != 1
         """;
 
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(new memberModel(
+                list.add(new MemberModel(
                         rs.getInt("member_id"),
                         rs.getString("member_code"),
                         rs.getInt("user_id")
@@ -38,10 +38,10 @@ public class memberController {
     }
 
     // Thêm mới member
-    public boolean addMember(memberModel member) {
+    public boolean addMember(MemberModel member) {
         String sql = "INSERT INTO members (member_code, user_id) VALUES (?, ?)";
 
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, member.getMemberCode());
             ps.setInt(2, member.getUserId());
@@ -56,8 +56,8 @@ public class memberController {
     }
 
     // Tìm user chưa là member (không phải admin) theo tên/sđt
-    public List<userModel> searchUsersNotInMembers(String keyword) {
-        List<userModel> list = new ArrayList<>();
+    public List<UserModel> searchUsersNotInMembers(String keyword) {
+        List<UserModel> list = new ArrayList<>();
         String sql = """
             SELECT u.* 
             FROM users u
@@ -69,13 +69,13 @@ public class memberController {
               )
         """;
 
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             ps.setString(2, "%" + keyword + "%");
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                list.add(new userModel(
+                list.add(new UserModel(
                         rs.getString("user_code"),
                         rs.getString("full_name"),
                         rs.getString("username"),
@@ -96,8 +96,8 @@ public class memberController {
     }
 
     // Lấy danh sách user chưa là member (không phải admin)
-    public List<userModel> getUsersNotInMembers() {
-        List<userModel> list = new ArrayList<>();
+    public List<UserModel> getUsersNotInMembers() {
+        List<UserModel> list = new ArrayList<>();
         String sql = """
             SELECT u.*
             FROM users u
@@ -108,9 +108,9 @@ public class memberController {
               )
         """;
 
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                list.add(new userModel(
+                list.add(new UserModel(
                         rs.getString("user_code"),
                         rs.getString("full_name"),
                         rs.getString("username"),
@@ -130,8 +130,8 @@ public class memberController {
     }
 
     // Tìm member theo tên/sđt (loại bỏ admin)
-    public List<memberModel> searchMembersByNameOrPhone(String keyword) {
-        List<memberModel> list = new ArrayList<>();
+    public List<MemberModel> searchMembersByNameOrPhone(String keyword) {
+        List<MemberModel> list = new ArrayList<>();
         String sql = """
             SELECT m.member_id, m.member_code, m.user_id
             FROM members m
@@ -141,13 +141,13 @@ public class memberController {
               AND ur.role_id != 1
         """;
 
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, "%" + keyword + "%");
             ps.setString(2, "%" + keyword + "%");
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
-                list.add(new memberModel(
+                list.add(new MemberModel(
                         rs.getInt("member_id"),
                         rs.getString("member_code"),
                         rs.getInt("user_id")
@@ -159,5 +159,32 @@ public class memberController {
         }
 
         return list;
+    }
+
+    public MemberModel getMemberByUserCode(String userCode) {
+        String sql = """
+        SELECT m.member_id, m.member_code, m.user_id
+        FROM members m
+        JOIN users u ON m.user_id = u.user_id
+        WHERE u.user_code = ?
+    """;
+
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userCode);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                return new MemberModel(
+                        rs.getInt("member_id"),
+                        rs.getString("member_code"),
+                        rs.getInt("user_id")
+                );
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

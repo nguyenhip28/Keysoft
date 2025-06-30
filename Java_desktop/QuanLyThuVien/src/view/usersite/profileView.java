@@ -1,28 +1,28 @@
 package view.usersite;
 
-import Controller.userController;
-import Model.userModel;
+import Controller.UserController;
+import Model.UserModel;
 import javax.swing.JOptionPane;
-import view.adminsite.memberView;
-import view.loginView;
+import view.adminsite.MemberView;
+import view.LoginView;
 
 /**
  *
  * @author Vu Nguyen
  */
-public class profileView extends javax.swing.JFrame {
+public class ProfileView extends javax.swing.JFrame {
 
     private String userCode;
 
     /**
      * Creates new form profileView
      */
-    public profileView() {
+    public ProfileView() {
         initComponents();
         setLocationRelativeTo(null);
     }
 
-    public profileView(String userCode) {
+    public ProfileView(String userCode) {
         this.userCode = userCode;
         initComponents();
         setLocationRelativeTo(null);
@@ -30,8 +30,8 @@ public class profileView extends javax.swing.JFrame {
     }
 
     private void loadUserInfo() {
-        userController controller = new userController();
-        userModel user = controller.getUserByCode(userCode);
+        UserController controller = new UserController();
+        UserModel user = controller.getUserByCode(userCode);
 
         if (user != null) {
             lbl_fullname.setText(user.getFullName());
@@ -310,7 +310,7 @@ public class profileView extends javax.swing.JFrame {
         );
 
         if (confirm == JOptionPane.YES_OPTION) {
-            new loginView().setVisible(true);
+            new LoginView().setVisible(true);
             this.dispose();
         }
     }//GEN-LAST:event_btn_logoutActionPerformed
@@ -331,12 +331,12 @@ public class profileView extends javax.swing.JFrame {
         }
 
         // Tạo model mới
-        userModel updatedUser = new userModel(
+        UserModel updatedUser = new UserModel(
                 userCode, fullName, "", email, age, gender, address, phone, "" 
         );
 
         // Gọi controller cập nhật
-        userController controller = new userController();
+        UserController controller = new UserController();
         boolean success = controller.updateUserInfo(updatedUser);
 
         if (success) {
@@ -347,7 +347,7 @@ public class profileView extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_updateActionPerformed
 
     private void btn_menuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_menuActionPerformed
-        new userView(userCode).setVisible(true);
+        new UserView(userCode).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btn_menuActionPerformed
 
@@ -368,20 +368,21 @@ public class profileView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(profileView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ProfileView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(profileView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ProfileView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(profileView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ProfileView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(profileView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(ProfileView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new profileView().setVisible(true);
+                new ProfileView().setVisible(true);
             }
         });
     }

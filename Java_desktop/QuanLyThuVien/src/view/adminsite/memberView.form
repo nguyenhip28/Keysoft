@@ -120,6 +120,9 @@
               <Dimension value="[176, 43]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_customMngActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn_bookmng">
           <Properties>
@@ -137,6 +140,9 @@
               <Dimension value="[176, 43]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_bookmngActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn_sachMuon">
           <Properties>
@@ -154,6 +160,9 @@
               <Dimension value="[176, 43]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_sachMuonActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn_dntBook">
           <Properties>
@@ -171,6 +180,9 @@
               <Dimension value="[176, 43]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_dntBookActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn_logout">
           <Properties>

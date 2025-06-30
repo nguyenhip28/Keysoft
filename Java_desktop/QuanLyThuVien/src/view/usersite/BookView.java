@@ -1,64 +1,70 @@
 package view.usersite;
 
-import controller.BorrowDetailController;
+import Controller.BooksController;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import model.BorrowDetailModel;
-import view.adminsite.MemberView;
+import model.BooksModel;
 import view.LoginView;
+import view.adminsite.DetailBookView;
 
 /**
  *
  * @author Vu Nguyen
  */
-public class UserView extends javax.swing.JFrame {
+public class BookView extends javax.swing.JFrame {
 
     private String userCode;
+    private BooksController controller = new BooksController();
+    private int currentPage = 1;
+    private int recordsPerPage = 10;
+    private int totalRecords = 0;
+    private int totalPages = 0;
 
     /**
-     * Creates new form usermeunuView
+     * Creates new form BookView
      */
-    public UserView() {
+    public BookView() {
         initComponents();
-        setLocationRelativeTo(null);
-        loadBorrowedBooks();
     }
 
-    public UserView(String userCode) {
+    public BookView(String userCode) {
         this.userCode = userCode;
         initComponents();
         setLocationRelativeTo(null);
-        loadBorrowedBooks();
+        loadBooks();
     }
 
-    private void loadBorrowedBooks() {
-        BorrowDetailController controller = new BorrowDetailController();
-        List<BorrowDetailModel> list = controller.getBorrowDetailsByUserCode(userCode);
+    private void loadBooks() {
+        totalRecords = controller.countBooks();
+        totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
+        List<BooksModel> books = controller.getBooksByPage(currentPage, recordsPerPage);
 
-        DefaultTableModel model = (DefaultTableModel) display_borrow.getModel();
-        model.setRowCount(0); // Xóa dữ liệu cũ
+        DefaultTableModel model = (DefaultTableModel) display_book.getModel();
+        model.setRowCount(0); // clear bảng
 
-        int stt = 1;
-        for (BorrowDetailModel detail : list) {
-            if (!"Đang mượn".equalsIgnoreCase(detail.getStatus())) {
-                continue; // Bỏ qua nếu không phải sách đang mượn
-            }
-
-            model.addRow(new Object[]{
-                stt++,
-                detail.getBookTitle(),
-                detail.getBorrowDate().toLocalDateTime().toLocalDate(),
-                detail.getExpectedReturnDate().toLocalDateTime().toLocalDate()
-            });
+        int stt = (currentPage - 1) * recordsPerPage + 1;
+        for (BooksModel b : books) {
+            model.addRow(new Object[]{stt++, b.getTitle(), b.getAuthor(), b.getPublishYear(), b.getCategory()});
         }
 
-        // Căn giữa dữ liệu trong bảng
+        centerTableCells(); // căn giữa sau khi load
+
+        // 🟦 Khóa/mở các nút phân trang
+        btn_first.setEnabled(currentPage > 1);
+        btn_back.setEnabled(currentPage > 1);
+        btn_next.setEnabled(currentPage < totalPages);
+        btn_last.setEnabled(currentPage < totalPages);
+    }
+
+    private void centerTableCells() {
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER);
-        for (int i = 0; i < display_borrow.getColumnCount(); i++) {
-            display_borrow.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
+        centerRenderer.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
+
+        // Áp dụng căn giữa cho từng cột
+        for (int i = 0; i < display_book.getColumnCount(); i++) {
+            display_book.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
     }
 
@@ -81,13 +87,15 @@ public class UserView extends javax.swing.JFrame {
         btn_logout = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        display_borrow = new javax.swing.JTable();
+        display_book = new javax.swing.JTable();
         btn_first = new javax.swing.JButton();
         btn_back = new javax.swing.JButton();
         btn_next = new javax.swing.JButton();
         btn_last = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        btn_borrow = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -100,11 +108,16 @@ public class UserView extends javax.swing.JFrame {
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/book.png"))); // NOI18N
         jLabel2.setText("E-BOOK  STORE");
 
-        btn_menu.setBackground(new java.awt.Color(0, 153, 255));
         btn_menu.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btn_menu.setText("Trang chủ");
         btn_menu.setToolTipText("");
+        btn_menu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_menuActionPerformed(evt);
+            }
+        });
 
+        btn_bookstore.setBackground(new java.awt.Color(0, 153, 255));
         btn_bookstore.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btn_bookstore.setText("Thư viện");
         btn_bookstore.setMaximumSize(new java.awt.Dimension(176, 43));
@@ -192,83 +205,137 @@ public class UserView extends javax.swing.JFrame {
 
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 260, 600));
 
-        display_borrow.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        display_borrow.setModel(new javax.swing.table.DefaultTableModel(
+        display_book.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        display_book.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "STT", "Tên sách", "Ngày mượn", "Dự kiến trả"
+                "STT", "Tên sách", "Tác giả", "Năm xuất bản", "Thể loại"
             }
         ));
-        jScrollPane1.setViewportView(display_borrow);
+        jScrollPane1.setViewportView(display_book);
+        if (display_book.getColumnModel().getColumnCount() > 0) {
+            display_book.getColumnModel().getColumn(0).setMinWidth(70);
+            display_book.getColumnModel().getColumn(0).setPreferredWidth(70);
+            display_book.getColumnModel().getColumn(0).setMaxWidth(70);
+        }
 
         btn_first.setText("Đầu");
+        btn_first.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_firstActionPerformed(evt);
+            }
+        });
 
         btn_back.setText("<");
+        btn_back.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_backActionPerformed(evt);
+            }
+        });
 
         btn_next.setText(">");
+        btn_next.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_nextActionPerformed(evt);
+            }
+        });
 
         btn_last.setText("Cuối");
+        btn_last.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_lastActionPerformed(evt);
+            }
+        });
 
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/reader-1713700-1453871.png"))); // NOI18N
-        jLabel3.setText("Sách đang mượn");
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/book.png"))); // NOI18N
+        jLabel3.setText("Thư viện sách");
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel5.setText("Thư viện");
+
+        btn_borrow.setBackground(new java.awt.Color(0, 153, 255));
+        btn_borrow.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_borrow.setText("Mượn sách");
+        btn_borrow.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_borrowActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btn_first)
+                .addGap(18, 18, 18)
+                .addComponent(btn_back)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btn_next)
+                .addGap(18, 18, 18)
+                .addComponent(btn_last)
+                .addGap(288, 288, 288))
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(16, 16, 16)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 791, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 791, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(226, 226, 226)
-                        .addComponent(jLabel3))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(284, 284, 284)
-                        .addComponent(btn_first)
-                        .addGap(18, 18, 18)
-                        .addComponent(btn_back)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btn_next)
-                        .addGap(18, 18, 18)
-                        .addComponent(btn_last)))
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btn_borrow, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(jLabel3)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(27, 27, 27)
+                        .addComponent(jLabel5))
+                    .addComponent(btn_borrow, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 289, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_last)
                     .addComponent(btn_next)
                     .addComponent(btn_back)
                     .addComponent(btn_first))
-                .addGap(11, 11, 11))
+                .addGap(75, 75, 75))
         );
 
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 120, 830, 430));
+        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 120, 830, 460));
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Xin chào khách hàng!");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 30, 490, 60));
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 48)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel6.setText("Xin chào khách hàng!");
+        getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 30, 490, 60));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/ảnh nền.jpg"))); // NOI18N
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(261, 0, 870, 600));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btn_bookstoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_bookstoreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btn_bookstoreActionPerformed
+
+    private void btn_profileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_profileActionPerformed
+        new ProfileView(userCode).setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btn_profileActionPerformed
 
     private void btn_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logoutActionPerformed
         int confirm = JOptionPane.showConfirmDialog(
@@ -285,15 +352,49 @@ public class UserView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btn_logoutActionPerformed
 
-    private void btn_profileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_profileActionPerformed
-        new ProfileView(userCode).setVisible(true);
-        this.dispose();
-    }//GEN-LAST:event_btn_profileActionPerformed
+    private void btn_borrowActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_borrowActionPerformed
+        int selectedRow = display_book.getSelectedRow();
 
-    private void btn_bookstoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_bookstoreActionPerformed
-        new BookView(userCode).setVisible(true);
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một sách để xem chi tiết.");
+            return;
+        }
+
+        int realIndex = (currentPage - 1) * recordsPerPage + selectedRow;
+        BooksModel book = controller.getBooksByPage(currentPage, recordsPerPage).get(selectedRow);
+
+        BookDetailView detailView = new BookDetailView(book, userCode);
+        detailView.setVisible(true);
+    }//GEN-LAST:event_btn_borrowActionPerformed
+
+    private void btn_firstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_firstActionPerformed
+        currentPage = 1;
+        loadBooks();
+    }//GEN-LAST:event_btn_firstActionPerformed
+
+    private void btn_backActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_backActionPerformed
+        if (currentPage > 1) {
+            currentPage--;
+        }
+        loadBooks();
+    }//GEN-LAST:event_btn_backActionPerformed
+
+    private void btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_nextActionPerformed
+        if (currentPage < totalPages) {
+            currentPage++;
+        }
+        loadBooks();
+    }//GEN-LAST:event_btn_nextActionPerformed
+
+    private void btn_lastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_lastActionPerformed
+        currentPage = totalPages;
+        loadBooks();
+    }//GEN-LAST:event_btn_lastActionPerformed
+
+    private void btn_menuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_menuActionPerformed
+        new UserView(userCode).setVisible(true);
         this.dispose();
-    }//GEN-LAST:event_btn_bookstoreActionPerformed
+    }//GEN-LAST:event_btn_menuActionPerformed
 
     private void btn_muon_tra_sachActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_muon_tra_sachActionPerformed
         new ReturnBookView(userCode).setVisible(true);
@@ -317,23 +418,20 @@ public class UserView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(UserView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BookView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(UserView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BookView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(UserView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BookView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(UserView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(BookView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new UserView().setVisible(true);
+                new BookView().setVisible(true);
             }
         });
     }
@@ -341,6 +439,7 @@ public class UserView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_back;
     private javax.swing.JButton btn_bookstore;
+    private javax.swing.JButton btn_borrow;
     private javax.swing.JButton btn_dntBook;
     private javax.swing.JButton btn_first;
     private javax.swing.JButton btn_last;
@@ -349,14 +448,14 @@ public class UserView extends javax.swing.JFrame {
     private javax.swing.JButton btn_muon_tra_sach;
     private javax.swing.JButton btn_next;
     private javax.swing.JButton btn_profile;
-    private javax.swing.JTable display_borrow;
+    private javax.swing.JTable display_book;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
-
 }

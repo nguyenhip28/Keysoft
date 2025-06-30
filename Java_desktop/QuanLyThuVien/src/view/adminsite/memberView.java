@@ -1,41 +1,41 @@
 package view.adminsite;
 
-import Controller.memberController;
-import Controller.userController;
+import Controller.MemberController;
+import Controller.UserController;
 import java.util.List;
 import javax.swing.JLabel;
-import view.adminsite.adminView;
+import view.adminsite.AdminView;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import model.memberModel;
-import view.loginView;
+import model.MemberModel;
+import view.LoginView;
 
 /**
  *
  * @author Vu Nguyen
  */
-public class memberView extends javax.swing.JFrame {
+public class MemberView extends javax.swing.JFrame {
 
     /**
      * Creates new form memberView
      */
-    public memberView() {
+    public MemberView() {
         initComponents();
         setLocationRelativeTo(null);
         loadMemberList();
     }
 
     private void loadMemberList() {
-        memberController controller = new memberController();
-        List<memberModel> list = controller.getAllMembers();
+        MemberController controller = new MemberController();
+        List<MemberModel> list = controller.getAllMembers();
 
         DefaultTableModel model = (DefaultTableModel) display_member.getModel();
         model.setRowCount(0);
 
         int stt = 1;
-        for (memberModel member : list) {
-            userController uController = new userController();
+        for (MemberModel member : list) {
+            UserController uController = new UserController();
             String fullName = uController.getUserNameById(member.getUserId());
             String gender = uController.getUserGenderById(member.getUserId());
             String phone = uController.getUserPhoneById(member.getUserId());
@@ -111,24 +111,44 @@ public class memberView extends javax.swing.JFrame {
         btn_customMng.setMaximumSize(new java.awt.Dimension(176, 43));
         btn_customMng.setMinimumSize(new java.awt.Dimension(176, 43));
         btn_customMng.setPreferredSize(new java.awt.Dimension(176, 43));
+        btn_customMng.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_customMngActionPerformed(evt);
+            }
+        });
 
         btn_bookmng.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btn_bookmng.setText("Thư viện");
         btn_bookmng.setMaximumSize(new java.awt.Dimension(176, 43));
         btn_bookmng.setMinimumSize(new java.awt.Dimension(176, 43));
         btn_bookmng.setPreferredSize(new java.awt.Dimension(176, 43));
+        btn_bookmng.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_bookmngActionPerformed(evt);
+            }
+        });
 
         btn_sachMuon.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btn_sachMuon.setText("Mượn sách");
         btn_sachMuon.setMaximumSize(new java.awt.Dimension(176, 43));
         btn_sachMuon.setMinimumSize(new java.awt.Dimension(176, 43));
         btn_sachMuon.setPreferredSize(new java.awt.Dimension(176, 43));
+        btn_sachMuon.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_sachMuonActionPerformed(evt);
+            }
+        });
 
         btn_dntBook.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btn_dntBook.setText("Nhập sách");
         btn_dntBook.setMaximumSize(new java.awt.Dimension(176, 43));
         btn_dntBook.setMinimumSize(new java.awt.Dimension(176, 43));
         btn_dntBook.setPreferredSize(new java.awt.Dimension(176, 43));
+        btn_dntBook.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_dntBookActionPerformed(evt);
+            }
+        });
 
         btn_logout.setBackground(new java.awt.Color(255, 102, 102));
         btn_logout.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
@@ -346,7 +366,7 @@ public class memberView extends javax.swing.JFrame {
         );
 
         if (confirm == JOptionPane.YES_OPTION) {
-            new loginView().setVisible(true);
+            new LoginView().setVisible(true);
             this.dispose();
         }
     }//GEN-LAST:event_btn_logoutActionPerformed
@@ -358,15 +378,15 @@ public class memberView extends javax.swing.JFrame {
             return;
         }
 
-        memberController controller = new memberController();
-        List<memberModel> list = controller.searchMembersByNameOrPhone(keyword);
+        MemberController controller = new MemberController();
+        List<MemberModel> list = controller.searchMembersByNameOrPhone(keyword);
 
         DefaultTableModel model = (DefaultTableModel) display_member.getModel();
         model.setRowCount(0);
 
         int stt = 1;
-        for (memberModel member : list) {
-            userController uController = new userController();
+        for (MemberModel member : list) {
+            UserController uController = new UserController();
             String fullName = uController.getUserNameById(member.getUserId());
             String gender = uController.getUserGenderById(member.getUserId());
             String phone = uController.getUserPhoneById(member.getUserId());
@@ -377,14 +397,34 @@ public class memberView extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_menuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_menuActionPerformed
-        new adminView().setVisible(true);
+        new AdminView().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btn_menuActionPerformed
 
     private void btn_addMemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_addMemActionPerformed
-        new addmemberView().setVisible(true);
+        new AddmemberView().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btn_addMemActionPerformed
+
+    private void btn_bookmngActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_bookmngActionPerformed
+        new MngBookView().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btn_bookmngActionPerformed
+
+    private void btn_customMngActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_customMngActionPerformed
+        new MemberView().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btn_customMngActionPerformed
+
+    private void btn_sachMuonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_sachMuonActionPerformed
+        new MngBorrowView().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btn_sachMuonActionPerformed
+
+    private void btn_dntBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dntBookActionPerformed
+        new BookImportView().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btn_dntBookActionPerformed
 
     /**
      * @param args the command line arguments
@@ -403,20 +443,21 @@ public class memberView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(memberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(memberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(memberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(memberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new memberView().setVisible(true);
+                new MemberView().setVisible(true);
             }
         });
     }

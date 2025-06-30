@@ -1,7 +1,7 @@
 package Controller;
 
-import DatabaseConnection.DBConnect;
-import Model.userModel;
+import DBConnect.DatabaseConnection;
+import Model.UserModel;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class userController {
+public class UserController {
 
     private String hashPassword(String password) {
         try {
@@ -30,14 +30,14 @@ public class userController {
     }
 
     // Đăng ký người dùng mới
-    public boolean registerUser(userModel user, String ignoredRole) {
+    public boolean registerUser(UserModel user, String ignoredRole) {
         Connection conn = null;
         PreparedStatement stmtUser = null;
         PreparedStatement stmtRole = null;
         PreparedStatement stmtUserRole = null;
 
         try {
-            conn = DBConnect.getJDBConnection();
+            conn = DatabaseConnection.getJDBConnection();
             conn.setAutoCommit(false); // Giao dịch
 
             // 1. Thêm user
@@ -113,10 +113,10 @@ public class userController {
         return false;
     }
 
-    public userModel login(String username, String password) {
+    public UserModel login(String username, String password) {
         String hashedPassword = hashPassword(password);
 
-        try (Connection conn = DBConnect.getJDBConnection()) {
+        try (Connection conn = DatabaseConnection.getJDBConnection()) {
             String sql = "SELECT * FROM users WHERE username = ? AND password_hash = ?";
             PreparedStatement stmt = conn.prepareStatement(sql);
             stmt.setString(1, username);
@@ -124,7 +124,7 @@ public class userController {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return new userModel(
+                return new UserModel(
                         rs.getString("user_code"),
                         rs.getString("full_name"),
                         rs.getString("username"),
@@ -149,7 +149,7 @@ public class userController {
                 + "JOIN user_roles ur ON u.user_id = ur.user_id "
                 + "WHERE u.username = ?";
 
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -165,20 +165,20 @@ public class userController {
         return -1;
     }
 
-    public List<userModel> searchUsersNotInMembers(String keyword) {
-        List<userModel> users = new ArrayList<>();
+    public List<UserModel> searchUsersNotInMembers(String keyword) {
+        List<UserModel> users = new ArrayList<>();
 
         String sql = "SELECT * FROM users u "
                 + "WHERE u.full_name LIKE ? "
                 + "AND u.user_id NOT IN (SELECT user_id FROM members)";
 
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, "%" + keyword + "%");
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                userModel u = new userModel(
+                UserModel u = new UserModel(
                         rs.getString("user_code"),
                         rs.getString("full_name"),
                         rs.getString("username"),
@@ -201,7 +201,7 @@ public class userController {
 
     public int getUserIdByUserCode(String userCode) {
         String sql = "SELECT user_id FROM users WHERE user_code = ?";
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, userCode);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
@@ -215,7 +215,7 @@ public class userController {
 
     public String getUserNameById(int userId) {
         String sql = "SELECT full_name FROM users WHERE user_id = ?";
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
@@ -230,7 +230,7 @@ public class userController {
 
     public String getUserGenderById(int userId) {
         String sql = "SELECT gender FROM users WHERE user_id = ?";
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
@@ -245,7 +245,7 @@ public class userController {
 
     public String getUserPhoneById(int userId) {
         String sql = "SELECT phone FROM users WHERE user_id = ?";
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
@@ -260,7 +260,7 @@ public class userController {
 
     public String getUserEmailById(int userId) {
         String sql = "SELECT email FROM users WHERE user_id = ?";
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, userId);
             ResultSet rs = ps.executeQuery();
@@ -273,17 +273,17 @@ public class userController {
         return "";
     }
 
-    public userModel getUserByCode(String userCode) {
-        userModel user = null;
+    public UserModel getUserByCode(String userCode) {
+        UserModel user = null;
 
-        try (Connection conn = DBConnect.getJDBConnection()) {
+        try (Connection conn = DatabaseConnection.getJDBConnection()) {
             String sql = "SELECT * FROM users WHERE user_code = ?";
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1, userCode);
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                user = new userModel(
+                user = new UserModel(
                         rs.getString("user_code"),
                         rs.getString("full_name"),
                         rs.getString("username"),
@@ -305,10 +305,10 @@ public class userController {
         return user;
     }
 
-    public boolean updateUserInfo(userModel user) {
+    public boolean updateUserInfo(UserModel user) {
         String sql = "UPDATE users SET full_name = ?, age = ?, gender = ?, email = ?, address = ?, phone = ? WHERE user_code = ?";
 
-        try (Connection conn = DBConnect.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConnection.getJDBConnection(); PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, user.getFullName());
             ps.setInt(2, user.getAge());

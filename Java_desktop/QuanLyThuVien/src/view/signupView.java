@@ -1,7 +1,7 @@
 package view;
 
-import Controller.userController;
-import Model.userModel;
+import Controller.UserController;
+import Model.UserModel;
 
 import javax.swing.JOptionPane;
 import java.security.MessageDigest;
@@ -11,19 +11,19 @@ import java.security.NoSuchAlgorithmException;
  *
  * @author Vu Nguyen
  */
-public class signupView extends javax.swing.JFrame {
+public class SignupView extends javax.swing.JFrame {
 
     /**
      * Creates new form signupView
      */
-    public signupView() {
+    public SignupView() {
         initComponents();
         setLocationRelativeTo(null);
         lbl_login.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR)); // đổi chuột thành tay
         lbl_login.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                new loginView().setVisible(true);
+                new LoginView().setVisible(true);
                 dispose(); // đóng form hiện tại
             }
         });
@@ -196,7 +196,7 @@ public class signupView extends javax.swing.JFrame {
         String userCode = "USER-" + (int) (Math.random() * 1000000);
 
         // Tạo user model (bạn có thể cập nhật thêm email/gender nếu có thêm input)
-        userModel user = new userModel(
+        UserModel user = new UserModel(
                 userCode,
                 fullName,
                 username,
@@ -208,12 +208,12 @@ public class signupView extends javax.swing.JFrame {
                 hashedPassword
         );
 
-        userController controller = new userController();
+        UserController controller = new UserController();
         boolean success = controller.registerUser(user, null);
 
         if (success) {
             JOptionPane.showMessageDialog(this, "Đăng ký thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-            new loginView().setVisible(true);
+            new LoginView().setVisible(true);
             this.dispose(); // đóng form
 
         } else {
@@ -238,20 +238,21 @@ public class signupView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(signupView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SignupView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(signupView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SignupView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(signupView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SignupView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(signupView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(SignupView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new signupView().setVisible(true);
+                new SignupView().setVisible(true);
             }
         });
     }

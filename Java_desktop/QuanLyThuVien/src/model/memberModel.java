@@ -1,20 +1,20 @@
 package model;
 
-public class memberModel {
+public class MemberModel {
 
     private int memberId;
     private String memberCode;
     private int userId;
 
     // Constructor đầy đủ (dùng khi lấy dữ liệu từ DB)
-    public memberModel(int memberId, String memberCode, int userId) {
+    public MemberModel(int memberId, String memberCode, int userId) {
         this.memberId = memberId;
         this.memberCode = memberCode;
         this.userId = userId;
     }
 
     // Constructor tạo mới (chỉ cần memberCode và userId)
-    public memberModel(String memberCode, int userId) {
+    public MemberModel(String memberCode, int userId) {
         this.memberCode = memberCode;
         this.userId = userId;
     }

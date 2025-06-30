@@ -1,18 +1,18 @@
 package view.adminsite;
 
-import javax.swing.JOptionPane;
-import view.LoginView;
-
 /**
  *
  * @author Vu Nguyen
  */
-public class AdminView extends javax.swing.JFrame {
+import javax.swing.JOptionPane;
+import view.LoginView;
+
+public class MngBorrowView extends javax.swing.JFrame {
 
     /**
-     * Creates new form adminView
+     * Creates new form MngBorrowView
      */
-    public AdminView() {
+    public MngBorrowView() {
         initComponents();
         setLocationRelativeTo(null);
     }
@@ -26,7 +26,6 @@ public class AdminView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btn_bookmng1 = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         btn_menu = new javax.swing.JButton();
@@ -35,22 +34,20 @@ public class AdminView extends javax.swing.JFrame {
         btn_sachMuon = new javax.swing.JButton();
         btn_dntBook = new javax.swing.JButton();
         btn_logout = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        display_report = new javax.swing.JTable();
-        btn_last = new javax.swing.JButton();
-        btn_next = new javax.swing.JButton();
-        btn_back = new javax.swing.JButton();
-        btn_first = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        btn_first1 = new javax.swing.JButton();
+        btn_back1 = new javax.swing.JButton();
+        btn_next1 = new javax.swing.JButton();
+        btn_last1 = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        display_borrow = new javax.swing.JTable();
+        jLabel5 = new javax.swing.JLabel();
+        lbl_search = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-
-        btn_bookmng1.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
-        btn_bookmng1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/book.png"))); // NOI18N
-        btn_bookmng1.setText("Thư viện");
-        btn_bookmng1.setMaximumSize(new java.awt.Dimension(176, 43));
-        btn_bookmng1.setMinimumSize(new java.awt.Dimension(176, 43));
-        btn_bookmng1.setPreferredSize(new java.awt.Dimension(176, 43));
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -62,10 +59,14 @@ public class AdminView extends javax.swing.JFrame {
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/book.png"))); // NOI18N
         jLabel2.setText("Xin chào Admin");
 
-        btn_menu.setBackground(new java.awt.Color(0, 153, 255));
         btn_menu.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btn_menu.setText("Trang chủ");
         btn_menu.setToolTipText("");
+        btn_menu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_menuActionPerformed(evt);
+            }
+        });
 
         btn_customMng.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btn_customMng.setText("Khách hàng");
@@ -89,6 +90,7 @@ public class AdminView extends javax.swing.JFrame {
             }
         });
 
+        btn_sachMuon.setBackground(new java.awt.Color(0, 153, 255));
         btn_sachMuon.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btn_sachMuon.setText("Mượn sách");
         btn_sachMuon.setMaximumSize(new java.awt.Dimension(176, 43));
@@ -157,99 +159,122 @@ public class AdminView extends javax.swing.JFrame {
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
-        btn_menu.getAccessibleContext().setAccessibleName("  Trang chủ");
-
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 260, 600));
 
-        display_report.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        display_report.setModel(new javax.swing.table.DefaultTableModel(
+        btn_first1.setText("Đầu");
+
+        btn_back1.setText("<");
+
+        btn_next1.setText(">");
+
+        btn_last1.setText("Cuối");
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/reader-1713700-1453871.png"))); // NOI18N
+        jLabel4.setText("Quản lý sách đang mượn");
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jLabel3.setText("Sách đang mượn");
+
+        display_borrow.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        display_borrow.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Số lượng sách mượn tháng", "Số lượng sách trả muộn", "Sách được mượn nhiều nhất", "Top hội viên"
+                "STT", "Tên sách", "Ngày mượn", "Dự kiến trả", "Thời gian trả", "Trạng thái", "Phạt trả muộn"
             }
         ));
-        jScrollPane1.setViewportView(display_report);
+        jScrollPane1.setViewportView(display_borrow);
+        if (display_borrow.getColumnModel().getColumnCount() > 0) {
+            display_borrow.getColumnModel().getColumn(0).setMinWidth(50);
+            display_borrow.getColumnModel().getColumn(0).setPreferredWidth(50);
+            display_borrow.getColumnModel().getColumn(0).setMaxWidth(50);
+        }
 
-        btn_last.setText("Cuối");
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/search-512 (1).png"))); // NOI18N
+        jLabel5.setText("Tìm thông tin mượn sách");
 
-        btn_next.setText(">");
+        jButton1.setBackground(new java.awt.Color(0, 153, 255));
+        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton1.setText("Tìm kiếm");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
-        btn_back.setText("<");
+        jButton2.setBackground(new java.awt.Color(0, 153, 255));
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton2.setText("Điều chỉnh phí phạt");
 
-        btn_first.setText("Đầu");
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/list.png"))); // NOI18N
-        jLabel3.setText("Bảng báo cáo đánh giá");
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 830, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(185, 185, 185)
-                        .addComponent(jLabel3)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(btn_first)
-                .addGap(18, 18, 18)
-                .addComponent(btn_back)
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(jLabel3)
+                        .addGap(261, 261, 261)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lbl_search, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 791, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel4)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(280, 280, 280)
+                        .addComponent(btn_first1)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_back1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btn_next1)
+                        .addGap(18, 18, 18)
+                        .addComponent(btn_last1)))
+                .addContainerGap(23, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addGap(17, 17, 17)
+                .addComponent(jLabel4)
+                .addGap(27, 27, 27)
+                .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(btn_next)
-                .addGap(18, 18, 18)
-                .addComponent(btn_last)
-                .addGap(293, 293, 293))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel3)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lbl_search)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btn_last)
-                    .addComponent(btn_next)
-                    .addComponent(btn_back)
-                    .addComponent(btn_first))
-                .addGap(29, 29, 29))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btn_last1)
+                    .addComponent(btn_next1)
+                    .addComponent(btn_back1)
+                    .addComponent(btn_first1))
+                .addGap(28, 28, 28))
         );
 
-        getContentPane().add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 60, 840, 490));
+        getContentPane().add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 30, 830, 540));
 
         jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/ảnh nền.jpg"))); // NOI18N
         getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 0, 870, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btn_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logoutActionPerformed
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "Bạn có chắc chắn muốn đăng xuất không?",
-                "Xác nhận đăng xuất",
-                JOptionPane.YES_NO_OPTION,
-                JOptionPane.QUESTION_MESSAGE
-        );
-
-        if (confirm == JOptionPane.YES_OPTION) {
-            new LoginView().setVisible(true);
-            this.dispose();
-        }
-    }//GEN-LAST:event_btn_logoutActionPerformed
 
     private void btn_customMngActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_customMngActionPerformed
         new MemberView().setVisible(true);
@@ -266,10 +291,34 @@ public class AdminView extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btn_sachMuonActionPerformed
 
+    private void btn_logoutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_logoutActionPerformed
+        int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "Bạn có chắc chắn muốn đăng xuất không?",
+                "Xác nhận đăng xuất",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE
+        );
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            new LoginView().setVisible(true);
+            this.dispose();
+        }
+    }//GEN-LAST:event_btn_logoutActionPerformed
+
     private void btn_dntBookActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_dntBookActionPerformed
         new BookImportView().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btn_dntBookActionPerformed
+
+    private void btn_menuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_menuActionPerformed
+        new AdminView().setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btn_menuActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -288,43 +337,46 @@ public class AdminView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(AdminView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MngBorrowView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(AdminView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MngBorrowView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(AdminView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MngBorrowView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(AdminView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(MngBorrowView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new AdminView().setVisible(true);
+                new MngBorrowView().setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btn_back;
+    private javax.swing.JButton btn_back1;
     private javax.swing.JButton btn_bookmng;
-    private javax.swing.JButton btn_bookmng1;
     private javax.swing.JButton btn_customMng;
     private javax.swing.JButton btn_dntBook;
-    private javax.swing.JButton btn_first;
-    private javax.swing.JButton btn_last;
+    private javax.swing.JButton btn_first1;
+    private javax.swing.JButton btn_last1;
     private javax.swing.JButton btn_logout;
     private javax.swing.JButton btn_menu;
-    private javax.swing.JButton btn_next;
+    private javax.swing.JButton btn_next1;
     private javax.swing.JButton btn_sachMuon;
-    private javax.swing.JTable display_report;
+    private javax.swing.JTable display_borrow;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField lbl_search;
     // End of variables declaration//GEN-END:variables
 }

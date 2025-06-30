@@ -1,10 +1,10 @@
-package DatabaseConnection;
+package DBConnect;
 
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import view.loginView;
+import view.LoginView;
 import com.formdev.flatlaf.FlatLightLaf;
-import view.loginView;
+import view.LoginView;
 
 public class main {
 
@@ -18,7 +18,7 @@ public class main {
 
         // Hiển thị loginView
         javax.swing.SwingUtilities.invokeLater(() -> {
-            loginView login = new loginView();
+            LoginView login = new LoginView();
             login.setLocationRelativeTo(null); // Hiển thị giữa màn hình
             login.setVisible(true);
         });

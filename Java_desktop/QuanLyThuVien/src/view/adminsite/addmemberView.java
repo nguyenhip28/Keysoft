@@ -1,32 +1,32 @@
 package view.adminsite;
 
-import Controller.memberController;
-import Controller.userController;
-import Model.userModel;
+import Controller.MemberController;
+import Controller.UserController;
+import Model.UserModel;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import model.memberModel;
+import model.MemberModel;
 
 /**
  *
  * @author Vu Nguyen
  */
-public class addmemberView extends javax.swing.JFrame {
+public class AddmemberView extends javax.swing.JFrame {
 
     /**
      * Creates new form addmember
      */
-    private final memberController memberController = new memberController();
-    private final userController userController = new userController();
-    private List<userModel> allUsers = new ArrayList<>();
+    private final MemberController memberController = new MemberController();
+    private final UserController userController = new UserController();
+    private List<UserModel> allUsers = new ArrayList<>();
     private int currentPage = 1;
     private int itemsPerPage = 10;
 
-    public addmemberView() {
+    public AddmemberView() {
         initComponents();
         loadAllUsers();
         setLocationRelativeTo(null);
@@ -38,7 +38,7 @@ public class addmemberView extends javax.swing.JFrame {
         displayUserTable(allUsers, currentPage);
     }
 
-    private void displayUserTable(List<userModel> users, int page) {
+    private void displayUserTable(List<UserModel> users, int page) {
         DefaultTableModel model = (DefaultTableModel) display_user.getModel();
         model.setRowCount(0); // Xóa dữ liệu cũ
 
@@ -46,7 +46,7 @@ public class addmemberView extends javax.swing.JFrame {
         int end = Math.min(start + itemsPerPage, users.size());
 
         for (int i = start; i < end; i++) {
-            userModel u = users.get(i);
+            UserModel u = users.get(i);
             model.addRow(new Object[]{
                 i + 1,
                 u.getFullName(),
@@ -261,7 +261,7 @@ public class addmemberView extends javax.swing.JFrame {
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         String keyword = lbl_user.getText().trim();
         if (!keyword.isEmpty()) {
-            List<userModel> result = memberController.searchUsersNotInMembers(keyword);
+            List<UserModel> result = memberController.searchUsersNotInMembers(keyword);
             if (!result.isEmpty()) {
                 allUsers = result;
                 currentPage = 1;
@@ -270,7 +270,6 @@ public class addmemberView extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Không tìm thấy người dùng.");
             }
         } else {
-            // Nếu không nhập gì -> load lại toàn bộ
             loadAllUsers();
         }
     }//GEN-LAST:event_btn_searchActionPerformed
@@ -279,14 +278,14 @@ public class addmemberView extends javax.swing.JFrame {
         int selectedRow = display_user.getSelectedRow();
         if (selectedRow >= 0) {
             int actualIndex = (currentPage - 1) * itemsPerPage + selectedRow;
-            userModel selectedUser = allUsers.get(actualIndex); // ✅ Sửa ở đây
+            UserModel selectedUser = allUsers.get(actualIndex); 
 
-            userController uController = new userController();
+            UserController uController = new UserController();
             int userId = uController.getUserIdByUserCode(selectedUser.getUserCode()); // dùng userCode để lấy userId
 
             if (userId != -1) {
                 String memberCode = "MB-" + selectedUser.getUserCode();
-                memberModel newMember = new memberModel(memberCode, userId);
+                MemberModel newMember = new MemberModel(memberCode, userId);
 
                 if (memberController.addMember(newMember)) {
                     JOptionPane.showMessageDialog(this, "Đã thêm hội viên!");
@@ -329,7 +328,7 @@ public class addmemberView extends javax.swing.JFrame {
     }//GEN-LAST:event_btn_lastActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        new memberView().setVisible(true);
+        new MemberView().setVisible(true);
         this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -350,21 +349,23 @@ public class addmemberView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(addmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(addmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(addmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(addmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddmemberView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new addmemberView().setVisible(true);
+                new AddmemberView().setVisible(true);
             }
         });
     }

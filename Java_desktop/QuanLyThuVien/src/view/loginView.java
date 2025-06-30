@@ -1,28 +1,28 @@
 package view;
 
-import view.usersite.userView;
-import view.adminsite.adminView;
-import Controller.userController;
-import Model.userModel;
+import view.usersite.UserView;
+import view.adminsite.AdminView;
+import Controller.UserController;
+import Model.UserModel;
 import javax.swing.JOptionPane;
 
 /**
  *
  * @author Vu Nguyen
  */
-public class loginView extends javax.swing.JFrame {
+public class LoginView extends javax.swing.JFrame {
 
     /**
      * Creates new form loginView
      */
-    public loginView() {
+    public LoginView() {
         initComponents();
         setLocationRelativeTo(null);
         lbl_signup.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         lbl_signup.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                new signupView().setVisible(true);
+                new SignupView().setVisible(true);
                 dispose(); // đóng form hiện tại
             }
         });
@@ -51,7 +51,6 @@ public class loginView extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(1130, 600));
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -167,8 +166,8 @@ public class loginView extends javax.swing.JFrame {
             return;
         }
 
-        userController controller = new userController();
-        userModel user = controller.login(username, password);
+        UserController controller = new UserController();
+        UserModel user = controller.login(username, password);
 
         if (user != null) {
             String userCode = user.getUserCode();  // ✅ Lấy userCode
@@ -176,10 +175,10 @@ public class loginView extends javax.swing.JFrame {
 
             if (roleId == 1) {
                 JOptionPane.showMessageDialog(this, "Xin chào Admin!");
-                new adminView().setVisible(true);
+                new AdminView().setVisible(true);
             } else if (roleId == 2) {
                 JOptionPane.showMessageDialog(this, "Xin chào khách hàng!");
-                new userView(userCode).setVisible(true);  
+                new UserView(userCode).setVisible(true);  
             } else {
                 JOptionPane.showMessageDialog(this, "Không xác định được vai trò người dùng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -208,20 +207,21 @@ public class loginView extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(loginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(loginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(loginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(loginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginView.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new loginView().setVisible(true);
+                new LoginView().setVisible(true);
             }
         });
     }
