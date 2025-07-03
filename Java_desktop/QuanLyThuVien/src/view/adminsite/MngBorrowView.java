@@ -4,10 +4,20 @@ package view.adminsite;
  *
  * @author Vu Nguyen
  */
+import controller.BorrowDetailController;
+import java.text.SimpleDateFormat;
+import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import model.BorrowDetailModel;
 import view.LoginView;
 
 public class MngBorrowView extends javax.swing.JFrame {
+
+    private int currentPage = 1;
+    private int itemsPerPage = 10;
+    private int totalPages = 1;
+    private List<BorrowDetailModel> allBorrowList;
 
     /**
      * Creates new form MngBorrowView
@@ -15,6 +25,63 @@ public class MngBorrowView extends javax.swing.JFrame {
     public MngBorrowView() {
         initComponents();
         setLocationRelativeTo(null);
+        BorrowDetailController controller = new BorrowDetailController();
+        allBorrowList = controller.getAllBorrowing();
+        updatePagination();
+    }
+
+    private void loadBorrowedBooks(List<BorrowDetailModel> list) {
+        // ⚠️ Gọi xử lý phạt trước khi hiển thị
+        BorrowDetailController controller = new BorrowDetailController();
+        controller.checkAndInsertPenalties();  // ← gọi ở đây để đảm bảo dữ liệu đã có trong DB
+
+        DefaultTableModel model = (DefaultTableModel) display_borrow.getModel();
+        model.setRowCount(0);
+        int stt = 1;
+
+        // Định dạng ngày
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        for (BorrowDetailModel b : list) {
+            String expectedReturn = b.getExpectedReturnDate() != null ? dateFormat.format(b.getExpectedReturnDate()) : "";
+            String actualReturn = b.getActualReturnDate() != null ? dateFormat.format(b.getActualReturnDate()) : "Chưa trả";
+
+            model.addRow(new Object[]{
+                stt++,
+                b.getMemberName(),
+                b.getBookTitle(),
+                expectedReturn,
+                actualReturn,
+                b.getLateFee()
+            });
+        }
+    }
+
+    private void updatePagination() {
+        int totalItems = allBorrowList.size();
+        totalPages = (int) Math.ceil((double) totalItems / itemsPerPage);
+
+        // Giới hạn trang
+        if (currentPage > totalPages) {
+            currentPage = totalPages;
+        }
+        if (currentPage < 1) {
+            currentPage = 1;
+        }
+
+        int start = (currentPage - 1) * itemsPerPage;
+        int end = Math.min(start + itemsPerPage, totalItems);
+
+        List<BorrowDetailModel> currentPageList = allBorrowList.subList(start, end);
+        loadBorrowedBooks(currentPageList);
+        updateButtonState();
+    }
+
+    private void updateButtonState() {
+        btn_first1.setEnabled(currentPage > 1);
+        btn_back1.setEnabled(currentPage > 1);
+        btn_next1.setEnabled(currentPage < totalPages);
+        btn_last1.setEnabled(currentPage < totalPages);
     }
 
     /**
@@ -45,8 +112,9 @@ public class MngBorrowView extends javax.swing.JFrame {
         display_borrow = new javax.swing.JTable();
         jLabel5 = new javax.swing.JLabel();
         lbl_search = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btn_search = new javax.swing.JButton();
+        btn_feeRule = new javax.swing.JButton();
+        btn_check = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -162,12 +230,32 @@ public class MngBorrowView extends javax.swing.JFrame {
         getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 260, 600));
 
         btn_first1.setText("Đầu");
+        btn_first1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_first1ActionPerformed(evt);
+            }
+        });
 
         btn_back1.setText("<");
+        btn_back1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_back1ActionPerformed(evt);
+            }
+        });
 
         btn_next1.setText(">");
+        btn_next1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_next1ActionPerformed(evt);
+            }
+        });
 
         btn_last1.setText("Cuối");
+        btn_last1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_last1ActionPerformed(evt);
+            }
+        });
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/reader-1713700-1453871.png"))); // NOI18N
@@ -179,13 +267,13 @@ public class MngBorrowView extends javax.swing.JFrame {
         display_borrow.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         display_borrow.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "STT", "Tên sách", "Ngày mượn", "Dự kiến trả", "Thời gian trả", "Trạng thái", "Phạt trả muộn"
+                "STT", "Người dùng", "Tên sách", "Dự kiến trả", "Thời gian trả", "Phạt trả muộn"
             }
         ));
         jScrollPane1.setViewportView(display_borrow);
@@ -196,20 +284,34 @@ public class MngBorrowView extends javax.swing.JFrame {
         }
 
         jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/search-512 (1).png"))); // NOI18N
-        jLabel5.setText("Tìm thông tin mượn sách");
+        jLabel5.setText("Tìm theo tên người dùng");
 
-        jButton1.setBackground(new java.awt.Color(0, 153, 255));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton1.setText("Tìm kiếm");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btn_search.setBackground(new java.awt.Color(0, 153, 255));
+        btn_search.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_search.setText("Tìm kiếm");
+        btn_search.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btn_searchActionPerformed(evt);
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(0, 153, 255));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setText("Điều chỉnh phí phạt");
+        btn_feeRule.setBackground(new java.awt.Color(0, 153, 255));
+        btn_feeRule.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_feeRule.setText("Điều chỉnh phí phạt");
+        btn_feeRule.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_feeRuleActionPerformed(evt);
+            }
+        });
+
+        btn_check.setBackground(new java.awt.Color(0, 153, 255));
+        btn_check.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btn_check.setText("Kiểm tra trả muộn");
+        btn_check.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_checkActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
@@ -217,17 +319,6 @@ public class MngBorrowView extends javax.swing.JFrame {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(24, 24, 24)
-                        .addComponent(jLabel3)
-                        .addGap(261, 261, 261)
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(lbl_search, javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(16, 16, 16)
                         .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -241,7 +332,20 @@ public class MngBorrowView extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btn_next1)
                         .addGap(18, 18, 18)
-                        .addComponent(btn_last1)))
+                        .addComponent(btn_last1))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(24, 24, 24)
+                        .addComponent(jLabel3)
+                        .addGap(261, 261, 261)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(lbl_search, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 173, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btn_search, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(btn_check, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(btn_feeRule, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
@@ -249,16 +353,18 @@ public class MngBorrowView extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addComponent(jLabel4)
-                .addGap(27, 27, 27)
-                .addComponent(jLabel5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel5)
+                    .addComponent(btn_check, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btn_feeRule, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(lbl_search)
                     .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(btn_search, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 264, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btn_last1)
@@ -316,9 +422,59 @@ public class MngBorrowView extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btn_menuActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
+        String keyword = lbl_search.getText().trim();
+        BorrowDetailController controller = new BorrowDetailController();
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+        if (keyword.isEmpty()) {
+            allBorrowList = controller.getAllBorrowing();
+        } else {
+            allBorrowList = controller.searchBorrowing(keyword);
+        }
+
+        currentPage = 1;
+        updatePagination();
+    }//GEN-LAST:event_btn_searchActionPerformed
+
+    private void btn_feeRuleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_feeRuleActionPerformed
+        new LateFeeRuleView().setVisible(true);
+    }//GEN-LAST:event_btn_feeRuleActionPerformed
+
+    private void btn_first1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_first1ActionPerformed
+        currentPage = 1;
+        updatePagination();
+    }//GEN-LAST:event_btn_first1ActionPerformed
+
+    private void btn_back1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_back1ActionPerformed
+        if (currentPage > 1) {
+            currentPage--;
+            updatePagination();
+        }
+    }//GEN-LAST:event_btn_back1ActionPerformed
+
+    private void btn_next1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_next1ActionPerformed
+        if (currentPage < totalPages) {
+            currentPage++;
+            updatePagination();
+        }
+    }//GEN-LAST:event_btn_next1ActionPerformed
+
+    private void btn_last1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_last1ActionPerformed
+        currentPage = totalPages;
+        updatePagination();
+    }//GEN-LAST:event_btn_last1ActionPerformed
+
+    private void btn_checkActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_checkActionPerformed
+        BorrowDetailController controller = new BorrowDetailController();
+        controller.checkAndInsertPenalties(); // Gọi xử lý phạt
+
+        // Tải lại dữ liệu mới sau khi phạt (cập nhật DB)
+        allBorrowList = controller.getAllBorrowing();
+        currentPage = 1;
+        updatePagination();
+
+        JOptionPane.showMessageDialog(this, "Đã kiểm tra và cập nhật các bản ghi trả muộn.");
+    }//GEN-LAST:event_btn_checkActionPerformed
 
     /**
      * @param args the command line arguments
@@ -358,17 +514,18 @@ public class MngBorrowView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_back1;
     private javax.swing.JButton btn_bookmng;
+    private javax.swing.JButton btn_check;
     private javax.swing.JButton btn_customMng;
     private javax.swing.JButton btn_dntBook;
+    private javax.swing.JButton btn_feeRule;
     private javax.swing.JButton btn_first1;
     private javax.swing.JButton btn_last1;
     private javax.swing.JButton btn_logout;
     private javax.swing.JButton btn_menu;
     private javax.swing.JButton btn_next1;
     private javax.swing.JButton btn_sachMuon;
+    private javax.swing.JButton btn_search;
     private javax.swing.JTable display_borrow;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

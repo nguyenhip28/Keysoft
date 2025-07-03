@@ -16,12 +16,18 @@ public class AddBookView extends javax.swing.JFrame {
      * Creates new form addBookView
      */
     private String imagePath = "";
+    private int importId;
 
     public AddBookView() {
         initComponents();
         btn_addImage = new javax.swing.JButton();
         lbl_imageName.setText("Chưa chọn ảnh");
         setLocationRelativeTo(null);
+    }
+
+    public AddBookView(int importId) {
+        this.importId = importId;
+        initComponents();
     }
 
     /**

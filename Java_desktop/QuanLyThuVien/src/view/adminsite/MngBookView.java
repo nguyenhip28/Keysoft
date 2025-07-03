@@ -23,6 +23,7 @@ public class MngBookView extends javax.swing.JFrame {
     private int recordsPerPage = 10;
     private int totalRecords = 0;
     private int totalPages = 0;
+    private List<BooksModel> searchedBooks = null;
 
     public MngBookView() {
         initComponents();
@@ -31,9 +32,17 @@ public class MngBookView extends javax.swing.JFrame {
     }
 
     private void loadBooks() {
-        totalRecords = controller.countBooks();
-        totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
-        List<BooksModel> books = controller.getBooksByPage(currentPage, recordsPerPage);
+        List<BooksModel> books;
+
+        if (searchedBooks != null) {
+            int start = (currentPage - 1) * recordsPerPage;
+            int end = Math.min(start + recordsPerPage, searchedBooks.size());
+            books = searchedBooks.subList(start, end);
+        } else {
+            totalRecords = controller.countBooks();
+            totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
+            books = controller.getBooksByPage(currentPage, recordsPerPage);
+        }
 
         DefaultTableModel model = (DefaultTableModel) display_book.getModel();
         model.setRowCount(0); // clear bảng
@@ -43,9 +52,8 @@ public class MngBookView extends javax.swing.JFrame {
             model.addRow(new Object[]{stt++, b.getTitle(), b.getAuthor(), b.getPublishYear(), b.getCategory()});
         }
 
-        centerTableCells(); // căn giữa sau khi load
+        centerTableCells();
 
-        // 🟦 Khóa/mở các nút phân trang
         btn_first.setEnabled(currentPage > 1);
         btn_back.setEnabled(currentPage > 1);
         btn_next.setEnabled(currentPage < totalPages);
@@ -416,15 +424,13 @@ public class MngBookView extends javax.swing.JFrame {
 
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         String keyword = lbl_search.getText().trim();
-        List<BooksModel> books = controller.searchBooks(keyword);
+        searchedBooks = controller.searchBooks(keyword); // lưu vào biến toàn cục
+        currentPage = 1;
 
-        DefaultTableModel model = (DefaultTableModel) display_book.getModel();
-        model.setRowCount(0);
+        totalRecords = searchedBooks.size();
+        totalPages = (int) Math.ceil((double) totalRecords / recordsPerPage);
 
-        int stt = 1;
-        for (BooksModel b : books) {
-            model.addRow(new Object[]{stt++, b.getTitle(), b.getAuthor(), b.getPublishYear(), b.getCategory()});
-        }
+        loadBooks();
     }//GEN-LAST:event_btn_searchActionPerformed
 
     private void btn_detailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_detailActionPerformed

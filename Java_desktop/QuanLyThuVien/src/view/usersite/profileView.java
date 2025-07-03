@@ -1,8 +1,10 @@
 package view.usersite;
 
-import Controller.UserController;
-import Model.UserModel;
+import Controller.AccountController;
+import Controller.ProfileController;
+import model.AccountModel;
 import javax.swing.JOptionPane;
+import model.ProfileModel;
 import view.adminsite.MemberView;
 import view.LoginView;
 
@@ -30,8 +32,8 @@ public class ProfileView extends javax.swing.JFrame {
     }
 
     private void loadUserInfo() {
-        UserController controller = new UserController();
-        UserModel user = controller.getUserByCode(userCode);
+        ProfileController controller = new ProfileController();
+        ProfileModel user = controller.getProfileByUserCode(userCode); // dùng ProfileController
 
         if (user != null) {
             lbl_fullname.setText(user.getFullName());
@@ -103,12 +105,22 @@ public class ProfileView extends javax.swing.JFrame {
         btn_bookstore.setMaximumSize(new java.awt.Dimension(176, 43));
         btn_bookstore.setMinimumSize(new java.awt.Dimension(176, 43));
         btn_bookstore.setPreferredSize(new java.awt.Dimension(176, 43));
+        btn_bookstore.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_bookstoreActionPerformed(evt);
+            }
+        });
 
         btn_muon_tra_sach.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btn_muon_tra_sach.setText("Mượn, Trả sách");
         btn_muon_tra_sach.setMaximumSize(new java.awt.Dimension(176, 43));
         btn_muon_tra_sach.setMinimumSize(new java.awt.Dimension(176, 43));
         btn_muon_tra_sach.setPreferredSize(new java.awt.Dimension(176, 43));
+        btn_muon_tra_sach.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btn_muon_tra_sachActionPerformed(evt);
+            }
+        });
 
         btn_dntBook.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         btn_dntBook.setText("Góp sách");
@@ -331,13 +343,13 @@ public class ProfileView extends javax.swing.JFrame {
         }
 
         // Tạo model mới
-        UserModel updatedUser = new UserModel(
-                userCode, fullName, "", email, age, gender, address, phone, "" 
+        ProfileModel updatedUser = new ProfileModel(
+                userCode, fullName, email, age, gender, address, phone
         );
 
         // Gọi controller cập nhật
-        UserController controller = new UserController();
-        boolean success = controller.updateUserInfo(updatedUser);
+        ProfileController controller = new ProfileController(); // sử dụng ProfileController
+        boolean success = controller.updateProfileByUserCode(updatedUser);
 
         if (success) {
             JOptionPane.showMessageDialog(this, "Cập nhật thông tin thành công!");
@@ -350,6 +362,16 @@ public class ProfileView extends javax.swing.JFrame {
         new UserView(userCode).setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btn_menuActionPerformed
+
+    private void btn_muon_tra_sachActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_muon_tra_sachActionPerformed
+        new ReturnBookView(userCode).setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btn_muon_tra_sachActionPerformed
+
+    private void btn_bookstoreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_bookstoreActionPerformed
+        new BookView(userCode).setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btn_bookstoreActionPerformed
 
     /**
      * @param args the command line arguments

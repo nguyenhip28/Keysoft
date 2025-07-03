@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class BorrowDetailModel {
@@ -8,34 +9,28 @@ public class BorrowDetailModel {
     private int borrowId;
     private int bookId;
     private int quantity;
-    private String bookTitle;              // Tên sách (để hiển thị)
-    private Timestamp borrowDate;          // Ngày mượn
-    private Timestamp expectedReturnDate;  // Ngày dự kiến trả
-    private Timestamp actualReturnDate;    // Ngày thực trả
-    private String status;                 // "Đang mượn" / "Đã trả"
-    private double lateFee;                // Phí trễ hạn
-    private double totalFee;               // Tổng phí
 
+    private String bookTitle;
+    private String author;
+    private String memberName;
+    private String phone;
+
+    private Timestamp borrowDate;
+    private Timestamp expectedReturnDate;
+    private Date actualReturnDate;
+
+    private String status;  // "Đang mượn", "Đã trả"
+    private double lateFee;
+    private double penaltyFee;
+    private double totalFee;
+    private int lateDays;
+    private Timestamp calculatedOn;
+
+    // Constructors, Getters, Setters
     public BorrowDetailModel() {
     }
 
-    public BorrowDetailModel(int borrowDetailId, int borrowId, int bookId, int quantity,
-            String bookTitle, Timestamp borrowDate, Timestamp expectedReturnDate,
-            Timestamp actualReturnDate, String status, double lateFee, double totalFee) {
-        this.borrowDetailId = borrowDetailId;
-        this.borrowId = borrowId;
-        this.bookId = bookId;
-        this.quantity = quantity;
-        this.bookTitle = bookTitle;
-        this.borrowDate = borrowDate;
-        this.expectedReturnDate = expectedReturnDate;
-        this.actualReturnDate = actualReturnDate;
-        this.status = status;
-        this.lateFee = lateFee;
-        this.totalFee = totalFee;
-    }
-
-    // Getters and Setters
+    // --- Getters and Setters ---
     public int getBorrowDetailId() {
         return borrowDetailId;
     }
@@ -76,6 +71,30 @@ public class BorrowDetailModel {
         this.bookTitle = bookTitle;
     }
 
+    public String getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
+    public String getMemberName() {
+        return memberName;
+    }
+
+    public void setMemberName(String memberName) {
+        this.memberName = memberName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
     public Timestamp getBorrowDate() {
         return borrowDate;
     }
@@ -92,11 +111,11 @@ public class BorrowDetailModel {
         this.expectedReturnDate = expectedReturnDate;
     }
 
-    public Timestamp getActualReturnDate() {
+    public Date getActualReturnDate() {
         return actualReturnDate;
     }
 
-    public void setActualReturnDate(Timestamp actualReturnDate) {
+    public void setActualReturnDate(Date actualReturnDate) {
         this.actualReturnDate = actualReturnDate;
     }
 
@@ -116,11 +135,35 @@ public class BorrowDetailModel {
         this.lateFee = lateFee;
     }
 
+    public double getPenaltyFee() {
+        return penaltyFee;
+    }
+
+    public void setPenaltyFee(double penaltyFee) {
+        this.penaltyFee = penaltyFee;
+    }
+
     public double getTotalFee() {
         return totalFee;
     }
 
     public void setTotalFee(double totalFee) {
         this.totalFee = totalFee;
+    }
+
+    public int getLateDays() {
+        return lateDays;
+    }
+
+    public void setLateDays(int lateDays) {
+        this.lateDays = lateDays;
+    }
+
+    public Timestamp getCalculatedOn() {
+        return calculatedOn;
+    }
+
+    public void setCalculatedOn(Timestamp calculatedOn) {
+        this.calculatedOn = calculatedOn;
     }
 }

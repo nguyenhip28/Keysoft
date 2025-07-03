@@ -1,11 +1,14 @@
 package view;
 
-import Controller.UserController;
-import Model.UserModel;
+import Controller.ProfileController;
+import Controller.AccountController;
 
 import javax.swing.JOptionPane;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import model.ProfileModel;
+import model.AccountModel;
+import view.LoginView;
 
 /**
  *
@@ -175,11 +178,13 @@ public class SignupView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // Lấy dữ liệu từ form
         String fullName = lbl_fullname.getText().trim();
         String username = lbl_username.getText().trim();
         String password = new String(lbl_password.getPassword());
         String confirmPassword = new String(btn_confirmPass.getPassword());
 
+        // Kiểm tra dữ liệu đầu vào
         if (fullName.isEmpty() || username.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin.", "Lỗi", JOptionPane.ERROR_MESSAGE);
             return;
@@ -190,35 +195,40 @@ public class SignupView extends javax.swing.JFrame {
             return;
         }
 
+        if (password.length() < 6) {
+            JOptionPane.showMessageDialog(this, "Mật khẩu phải có ít nhất 6 ký tự.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Kiểm tra username trùng
+        AccountController accountController = new AccountController();
+        if (accountController.checkUsernameExists(username)) {
+            JOptionPane.showMessageDialog(this, "Tên đăng nhập đã tồn tại. Vui lòng chọn tên khác.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Tạo mã người dùng
+        String userCode = "USER-" + System.currentTimeMillis();
         String hashedPassword = hashPassword(password);
 
-        // Tạo mã người dùng ngẫu nhiên đơn giản (VD: USER-123456)
-        String userCode = "USER-" + (int) (Math.random() * 1000000);
+        // Tạo tài khoản và hồ sơ
+        AccountModel account = new AccountModel(userCode, username, hashedPassword);
+        ProfileModel profile = new ProfileModel();
+        profile.setUserCode(userCode);
+        profile.setFullName(fullName);
+        // Các trường còn lại có thể được cập nhật sau
 
-        // Tạo user model (bạn có thể cập nhật thêm email/gender nếu có thêm input)
-        UserModel user = new UserModel(
-                userCode,
-                fullName,
-                username,
-                "", // email
-                0, // age
-                "Khác", // gender
-                "", // address
-                "", // phone
-                hashedPassword
-        );
-
-        UserController controller = new UserController();
-        boolean success = controller.registerUser(user, null);
-
-        if (success) {
-            JOptionPane.showMessageDialog(this, "Đăng ký thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-            new LoginView().setVisible(true);
-            this.dispose(); // đóng form
-
-        } else {
-            JOptionPane.showMessageDialog(this, "Đăng ký thất bại. Tên đăng nhập có thể đã tồn tại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+        // Đăng ký tài khoản
+        boolean isRegistered = accountController.registerAccount(account, profile);
+        if (!isRegistered) {
+            JOptionPane.showMessageDialog(this, "Đăng ký người dùng thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+
+        // Thành công
+        JOptionPane.showMessageDialog(this, "Đăng ký thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
+        new LoginView().setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

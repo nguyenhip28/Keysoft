@@ -1,7 +1,12 @@
 package view.usersite;
 
 import controller.BorrowDetailController;
+import controller.LateFeeRuleDAO;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -35,7 +40,7 @@ public class ReturnBookView extends javax.swing.JFrame {
         BorrowDetailController controller = new BorrowDetailController();
         List<BorrowDetailModel> list = controller.getBorrowDetailsByUserCode(userCode);
 
-        // ⚡️ Sắp xếp: "Đang mượn" lên đầu
+        // ⚡️ Sắp xếp: "Đang mượn" lên đầu, sau đó theo ngày mượn giảm dần
         list.sort((a, b) -> {
             if (a.getStatus().equals("Đang mượn") && !b.getStatus().equals("Đang mượn")) {
                 return -1;
@@ -47,27 +52,44 @@ public class ReturnBookView extends javax.swing.JFrame {
         });
 
         DefaultTableModel model = (DefaultTableModel) display_borrow.getModel();
-        model.setRowCount(0); // Clear dữ liệu cũ
+        model.setRowCount(0); // Xóa dữ liệu cũ
 
         int stt = 1;
         for (BorrowDetailModel detail : list) {
-            String returnTimeStr = (detail.getActualReturnDate() != null)
-                    ? detail.getActualReturnDate().toLocalDateTime().toLocalDate().toString()
-                    : "";
+            LocalDate borrowDate = detail.getBorrowDate().toLocalDateTime().toLocalDate();
+            LocalDate expectedReturn = detail.getExpectedReturnDate().toLocalDateTime().toLocalDate();
+            LocalDate actualReturn = (detail.getActualReturnDate() != null)
+                    ? detail.getActualReturnDate().toLocalDateTime().toLocalDate()
+                    : null;
+
+            LocalDate today = LocalDate.now();
+            long lateDays = 0;
+            long penaltyFee = 0;
+
+            // Tính số ngày trễ và phí phạt nếu đang mượn và quá hạn
+            if (detail.getStatus().equals("Đang mượn") && today.isAfter(expectedReturn)) {
+                lateDays = ChronoUnit.DAYS.between(expectedReturn, today);
+                BigDecimal feePerDay = LateFeeRuleDAO.getFeePerDay((int) lateDays);
+                penaltyFee = feePerDay.multiply(BigDecimal.valueOf(lateDays)).longValue();
+            }
+
+            String returnTimeStr = (actualReturn != null) ? actualReturn.toString() : "";
+            String penaltyDisplay = (penaltyFee > 0) ? penaltyFee + " đ" : "0 đ";
 
             model.addRow(new Object[]{
                 stt++,
                 detail.getBookTitle(),
-                detail.getBorrowDate().toLocalDateTime().toLocalDate(),
-                detail.getExpectedReturnDate().toLocalDateTime().toLocalDate(),
+                borrowDate,
+                expectedReturn,
                 returnTimeStr,
-                detail.getStatus()
+                detail.getStatus(),
+                penaltyDisplay
             });
         }
 
-        // Căn giữa dữ liệu trong bảng
+        // Căn giữa toàn bộ cột trong bảng
         DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(javax.swing.JLabel.CENTER);
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < display_borrow.getColumnCount(); i++) {
             display_borrow.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
         }
@@ -212,13 +234,13 @@ public class ReturnBookView extends javax.swing.JFrame {
         display_borrow.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         display_borrow.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "STT", "Tên sách", "Ngày mượn", "Dự kiến trả", "Thời gian trả", "Trạng thái"
+                "STT", "Tên sách", "Ngày mượn", "Dự kiến trả", "Thời gian trả", "Trạng thái", "Phí phạt"
             }
         ));
         jScrollPane1.setViewportView(display_borrow);
@@ -238,7 +260,7 @@ public class ReturnBookView extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Images/reader-1713700-1453871.png"))); // NOI18N
-        jLabel3.setText("Sách đang mượn");
+        jLabel3.setText("Mượn, trả sách");
 
         btn_return.setBackground(new java.awt.Color(0, 153, 255));
         btn_return.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N

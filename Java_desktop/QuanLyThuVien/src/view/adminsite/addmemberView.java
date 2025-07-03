@@ -1,7 +1,7 @@
 package view.adminsite;
 
 import Controller.MemberController;
-import Controller.UserController;
+import Controller.AccountController;
 import Model.UserModel;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import model.AccountModel;
 import model.MemberModel;
 
 /**
@@ -21,8 +22,8 @@ public class AddmemberView extends javax.swing.JFrame {
      * Creates new form addmember
      */
     private final MemberController memberController = new MemberController();
-    private final UserController userController = new UserController();
-    private List<UserModel> allUsers = new ArrayList<>();
+    private final AccountController userController = new AccountController();
+    private List<AccountModel> allUsers = new ArrayList<>();
     private int currentPage = 1;
     private int itemsPerPage = 10;
 
@@ -38,7 +39,7 @@ public class AddmemberView extends javax.swing.JFrame {
         displayUserTable(allUsers, currentPage);
     }
 
-    private void displayUserTable(List<UserModel> users, int page) {
+    private void displayUserTable(List<AccountModel> users, int page) {
         DefaultTableModel model = (DefaultTableModel) display_user.getModel();
         model.setRowCount(0); // Xóa dữ liệu cũ
 
@@ -46,7 +47,7 @@ public class AddmemberView extends javax.swing.JFrame {
         int end = Math.min(start + itemsPerPage, users.size());
 
         for (int i = start; i < end; i++) {
-            UserModel u = users.get(i);
+            AccountModel u = users.get(i);
             model.addRow(new Object[]{
                 i + 1,
                 u.getFullName(),
@@ -261,7 +262,7 @@ public class AddmemberView extends javax.swing.JFrame {
     private void btn_searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_searchActionPerformed
         String keyword = lbl_user.getText().trim();
         if (!keyword.isEmpty()) {
-            List<UserModel> result = memberController.searchUsersNotInMembers(keyword);
+            List<AccountModel> result = memberController.searchUsersNotInMembers(keyword);
             if (!result.isEmpty()) {
                 allUsers = result;
                 currentPage = 1;
@@ -278,10 +279,9 @@ public class AddmemberView extends javax.swing.JFrame {
         int selectedRow = display_user.getSelectedRow();
         if (selectedRow >= 0) {
             int actualIndex = (currentPage - 1) * itemsPerPage + selectedRow;
-            UserModel selectedUser = allUsers.get(actualIndex); 
+            AccountModel selectedUser = allUsers.get(actualIndex);
 
-            UserController uController = new UserController();
-            int userId = uController.getUserIdByUserCode(selectedUser.getUserCode()); // dùng userCode để lấy userId
+            int userId = userController.getUserIdByUserCode(selectedUser.getUserCode());
 
             if (userId != -1) {
                 String memberCode = "MB-" + selectedUser.getUserCode();
@@ -289,7 +289,7 @@ public class AddmemberView extends javax.swing.JFrame {
 
                 if (memberController.addMember(newMember)) {
                     JOptionPane.showMessageDialog(this, "Đã thêm hội viên!");
-                    btn_searchActionPerformed(null);
+                    loadAllUsers();
                 } else {
                     JOptionPane.showMessageDialog(this, "Thêm thất bại, có thể user đã là hội viên.");
                 }

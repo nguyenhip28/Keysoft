@@ -1,7 +1,7 @@
 package view.adminsite;
 
 import Controller.MemberController;
-import Controller.UserController;
+import Controller.AccountController;
 import java.util.List;
 import javax.swing.JLabel;
 import view.adminsite.AdminView;
@@ -35,7 +35,7 @@ public class MemberView extends javax.swing.JFrame {
 
         int stt = 1;
         for (MemberModel member : list) {
-            UserController uController = new UserController();
+            AccountController uController = new AccountController();
             String fullName = uController.getUserNameById(member.getUserId());
             String gender = uController.getUserGenderById(member.getUserId());
             String phone = uController.getUserPhoneById(member.getUserId());
@@ -386,7 +386,7 @@ public class MemberView extends javax.swing.JFrame {
 
         int stt = 1;
         for (MemberModel member : list) {
-            UserController uController = new UserController();
+            AccountController uController = new AccountController();
             String fullName = uController.getUserNameById(member.getUserId());
             String gender = uController.getUserGenderById(member.getUserId());
             String phone = uController.getUserPhoneById(member.getUserId());

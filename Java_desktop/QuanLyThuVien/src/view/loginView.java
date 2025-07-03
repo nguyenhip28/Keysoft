@@ -1,9 +1,9 @@
 package view;
 
+import model.AccountModel;
 import view.usersite.UserView;
 import view.adminsite.AdminView;
-import Controller.UserController;
-import Model.UserModel;
+import Controller.AccountController;
 import javax.swing.JOptionPane;
 
 /**
@@ -166,21 +166,21 @@ public class LoginView extends javax.swing.JFrame {
             return;
         }
 
-        UserController controller = new UserController();
-        UserModel user = controller.login(username, password);
+        AccountController controller = new AccountController();
+        AccountModel user = controller.login(username, password);
 
         if (user != null) {
-            String userCode = user.getUserCode();  // ✅ Lấy userCode
-            int roleId = controller.getRoleIdByUsername(username);
+            String userCode = user.getUserCode();
+            int roleId = controller.getRoleIdByUsername(username); // Lấy role_id bằng username
 
             if (roleId == 1) {
                 JOptionPane.showMessageDialog(this, "Xin chào Admin!");
                 new AdminView().setVisible(true);
             } else if (roleId == 2) {
-                JOptionPane.showMessageDialog(this, "Xin chào khách hàng!");
-                new UserView(userCode).setVisible(true);  
+                JOptionPane.showMessageDialog(this, "Xin chào Khách hàng!");
+                new UserView(userCode).setVisible(true);  // truyền user_code
             } else {
-                JOptionPane.showMessageDialog(this, "Không xác định được vai trò người dùng.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Vai trò không hợp lệ.", "Lỗi", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 

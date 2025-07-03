@@ -6,17 +6,20 @@ public class BookImportModel {
 
     private int importId;
     private Date importDate;
-    private int memberId;
+    private String importerName; // ✅ sửa từ memberId thành importerName
 
-    public BookImportModel(int importId, Date importDate, int memberId) {
-        this.importId = importId;
-        this.importDate = importDate;
-        this.memberId = memberId;
+    public BookImportModel() {
     }
 
-    public BookImportModel(Date importDate, int memberId) {
+    public BookImportModel(int importId, Date importDate, String importerName) {
+        this.importId = importId;
         this.importDate = importDate;
-        this.memberId = memberId;
+        this.importerName = importerName;
+    }
+
+    public BookImportModel(Date importDate, String importerName) {
+        this.importDate = importDate;
+        this.importerName = importerName;
     }
 
     public int getImportId() {
@@ -35,11 +38,11 @@ public class BookImportModel {
         this.importDate = importDate;
     }
 
-    public int getMemberId() {
-        return memberId;
+    public String getImporterName() {
+        return importerName;
     }
 
-    public void setMemberId(int memberId) {
-        this.memberId = memberId;
+    public void setImporterName(String importerName) {
+        this.importerName = importerName;
     }
 }

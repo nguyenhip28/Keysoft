@@ -117,6 +117,9 @@
               <Dimension value="[176, 43]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_bookstoreActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn_muon_tra_sach">
           <Properties>
@@ -134,6 +137,9 @@
               <Dimension value="[176, 43]"/>
             </Property>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_muon_tra_sachActionPerformed"/>
+          </Events>
         </Component>
         <Component class="javax.swing.JButton" name="btn_dntBook">
           <Properties>
